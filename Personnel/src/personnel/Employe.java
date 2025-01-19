@@ -1,6 +1,7 @@
 package personnel;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 
 /**
  * Employé d'une ligue hébergée par la M2L. Certains peuvent 
@@ -16,8 +17,10 @@ public class Employe implements Serializable, Comparable<Employe>
 	private String nom, prenom, password, mail;
 	private Ligue ligue;
 	private GestionPersonnel gestionPersonnel;
+	private LocalDate dateDepart; // Ajout de l'attribut Dep
+	private LocalDate dateArrivee; // Ajout de l'attribut Arr
 	
-	Employe(GestionPersonnel gestionPersonnel, Ligue ligue, String nom, String prenom, String mail, String password)
+	Employe(GestionPersonnel gestionPersonnel, Ligue ligue, String nom, String prenom, String mail, String password ,LocalDate dateDepart,LocalDate dateArrivee)
 	{
 		this.gestionPersonnel = gestionPersonnel;
 		this.nom = nom;
@@ -25,6 +28,8 @@ public class Employe implements Serializable, Comparable<Employe>
 		this.password = password;
 		this.mail = mail;
 		this.ligue = ligue;
+		this.dateDepart = dateDepart;
+		this.dateArrivee = dateArrivee;
 	}
 	
 	/**
@@ -143,6 +148,55 @@ public class Employe implements Serializable, Comparable<Employe>
 	{
 		return ligue;
 	}
+	
+	/*******************************************************************************************
+	 */	
+	
+	/**
+	 * Retourne la Date à laquelle l'employé est Arrivé.
+	 * @return dateArrivee à laquelle l'employé est Arrive.
+	 */
+	
+	public LocalDate getDateArrive()
+	{
+		return dateArrivee;
+	}
+	/**
+	 * Change la Date d'arrive de l'employé.
+	 * @param dateArrivee la nouvelle dateArrivee de l'employé.
+	 */
+
+	public void setDateArrivee(LocalDate dateArrivee)
+	{
+		this.dateArrivee = dateArrivee;
+	}
+	
+	
+	/**
+	 * Retourne la Date à laquelle l'employé est Parti.
+	 * @return dateDepart à laquelle l'employé est Parti.
+	 */	
+	public LocalDate getDateDepart()
+	{
+		return dateDepart;
+	}
+	/**
+	 * Change la date de depart de l'employé.
+	 * @param dateDepart la nouvelle date de Depart de l'employé.
+	 */
+
+	public void setDateDepart(LocalDate dateDepart)
+	{
+		this.dateDepart = dateDepart;
+	}
+
+	/*******************************************************************************************
+	 /	
+
+	
+	
+	
+	
 
 	/**
 	 * Supprime l'employé. Si celui-ci est un administrateur, le root

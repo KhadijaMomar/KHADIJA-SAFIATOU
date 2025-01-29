@@ -85,12 +85,11 @@ public class Ligue implements Serializable, Comparable<Ligue> {
     }
 
     /**
-     * Ajoute un employé dans la ligue. Cette méthode 
-     * est le seul moyen de créer un employé.
+     * Ajoute un employé dans la ligue avec des dates d'arrivée et de départ spécifiées.
      * @param nom le nom de l'employé.
      * @param prenom le prénom de l'employé.
      * @param mail l'adresse mail de l'employé.
-     * @param password le password de l'employé.
+     * @param password le mot de passe de l'employé.
      * @param dateArrivee la date d'arrivée de l'employé.
      * @param dateDepart la date de départ de l'employé (peut être null).
      * @return l'employé créé. 
@@ -102,11 +101,12 @@ public class Ligue implements Serializable, Comparable<Ligue> {
     }
 
     /**
-     * Ajoute un employé dans la ligue sans date de départ (pour compatibilité).
+     * Ajoute un employé dans la ligue avec une date d'arrivée spécifiée
+     * et une date de départ par défaut à null.
      * @param nom le nom de l'employé.
      * @param prenom le prénom de l'employé.
      * @param mail l'adresse mail de l'employé.
-     * @param password le password de l'employé.
+     * @param password le mot de passe de l'employé.
      * @param dateArrivee la date d'arrivée de l'employé.
      * @return l'employé créé. 
      */
@@ -115,15 +115,15 @@ public class Ligue implements Serializable, Comparable<Ligue> {
     }
 
     /**
-     * Ajoute un employé dans la ligue sans date d'arrivée ni date de départ (pour compatibilité).
+     * Ajoute un employé dans la ligue avec une date d'arrivée par défaut
+     * (date actuelle) et une date de départ par défaut à null.
      * @param nom le nom de l'employé.
      * @param prenom le prénom de l'employé.
      * @param mail l'adresse mail de l'employé.
-     * @param password le password de l'employé.
+     * @param password le mot de passe de l'employé.
      * @return l'employé créé. 
      */
     public Employe addEmploye(String nom, String prenom, String mail, String password) {
-        // Par défaut, la date d'arrivée est la date actuelle, et la date de départ est null
         return addEmploye(nom, prenom, mail, password, LocalDate.now(), null);
     }
 

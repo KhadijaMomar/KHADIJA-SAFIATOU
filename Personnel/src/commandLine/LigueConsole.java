@@ -2,6 +2,7 @@ package commandLine;
 
 import static commandLineMenus.rendering.examples.util.InOut.getString;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 import commandLineMenus.List;
@@ -91,18 +92,29 @@ public class LigueConsole
 				(element) -> editerLigue(element)
 				);
 	}
-	
+		
 	private Option ajouterEmploye(final Ligue ligue)
 	{
-		return new Option("ajouter un employé", "a",
-				() -> 
-				{
-					ligue.addEmploye(getString("nom : "), 
-						getString("prenom : "), getString("mail : "), 
-						getString("password : "));
-				}
-		);
+	    return new Option("Ajouter un employé", "a",
+	            () -> 
+	            {
+	            	
+	                String nom = getString("Nom de l'employé : ");
+	                String prenom = getString("Prénom de l'employé : ");
+	                String mail = getString("Mail de l'employé : ");
+	                String password = getString("Mot de passe de l'employé : ");
+	                
+	                String dateArriveeStr = getString("Date d'arrivée (format: YYYY-MM-DD) : ");
+	                LocalDate dateArrivee = LocalDate.parse(dateArriveeStr); // Convertir en LocalDate
+	                String dateDepartStr = getString("Date de départ (format: YYYY-MM-DD) (laissez vide si pas de départ) : ");
+	                LocalDate dateDepart = dateDepartStr.isEmpty() ? null : LocalDate.parse(dateDepartStr); // Si vide, assigner null
+	                
+	                // Ajouter l'employé avec les dates 
+	                ligue.addEmploye(nom, prenom, mail, password, dateArrivee, dateDepart);
+	            }
+	    );
 	}
+
 	
 	private Menu gererEmployes(Ligue ligue)
 	{

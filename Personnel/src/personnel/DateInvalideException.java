@@ -1,6 +1,6 @@
 package personnel;
 
-public class DateInvalideException extends Exception {
+public class DateInvalideException extends IllegalArgumentException {
     public DateInvalideException(String message) {
         super(message);
     }

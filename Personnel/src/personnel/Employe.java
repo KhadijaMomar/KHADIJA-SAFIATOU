@@ -180,8 +180,7 @@ public class Employe implements Serializable, Comparable<Employe> {
     /**
      * Modifie la date de départ de l'employé.
      * 
-     * @param dateDepart La nouvelle date de départ de l'employé (peut être null).
-     * @throws IllegalArgumentException Si la date d'arrivée est déjà définie et est après la nouvelle date de départ.
+     * @pa
      */
     public void setDateDepart(LocalDate dateDepart) {
         if (dateDepart != null && dateArrivee != null && dateDepart.isBefore(dateArrivee)) {

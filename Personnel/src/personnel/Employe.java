@@ -2,12 +2,9 @@ package personnel;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-<<<<<<< HEAD
-
-
-=======
 import personnel.DateInvalideException;
 import personnel.DateIncoherenteException;
+import java.time.LocalDate;
 
 /**
  * Employé d'une ligue hébergée par la M2L. Certains peuvent 
@@ -22,74 +19,9 @@ public class Employe implements Serializable, Comparable<Employe> {
     private Ligue ligue;
     private GestionPersonnel gestionPersonnel;
     private LocalDate dateDepart; 
-    private LocalDate dateArrivee; }
-
-
-public class Employe implements Serializable, Comparable<Employe>
-{
-	private static final long serialVersionUID = 4795721718037994734L;
-	private String nom, prenom, password, mail;
-	private Ligue ligue;
-	private GestionPersonnel gestionPersonnel;
-	private LocalDate date_depart, date_arrivee;
-	
-	Employe(GestionPersonnel gestionPersonnel, Ligue ligue, String nom, String prenom, String mail, String password, LocalDate date_depart, LocalDate date_arrivee)
-	{
-		this.gestionPersonnel = gestionPersonnel;
-		this.nom = nom;
-		this.prenom = prenom;
-		this.password = password;
-		this.mail = mail;
-		this.ligue = ligue;
-	}
-	
-	
-	/**
-	 * Retourne vrai ssi l'employé est administrateur de la ligue 
-	 * passée en paramètre.
-	 * @return vrai ssi l'employé est administrateur de la ligue 
-	 * passée en paramètre.
-	 * @param ligue la ligue pour laquelle on souhaite vérifier si this 
-	 * est l'admininstrateur.
-	 */
-	
-	public boolean estAdmin(Ligue ligue)
-	{
-		return ligue.getAdministrateur() == this;
-	}
-	
-	/**
-	 * Retourne vrai ssi l'employé est le root.
-	 * @return vrai ssi l'employé est le root.
-	 */
-	
-	public boolean estRoot()
-	{
-		return gestionPersonnel.getRoot() == this;
-	}
-	
-	/**
-	 * Retourne le nom de l'employé.
-	 * @return le nom de l'employé. 
-	 */
-	
-	public LocalDate getDateDepart(){
-		return date_depart;
-	}
-	public void setDateDepart(LocalDate date_depart){
-		this.date_depart = date_depart;
-	}
-	public LocalDate getDateArrivee(){
-		return date_arrivee;
-	}
-	public void setDateArrivee(LocalDate date_arrivee){
-		this.date_arrivee = date_arrivee;
-	}
-	
-	public String getNom()
-	{
-		return nom;
-	}
+    private LocalDate dateArrivee; 
+    
+    
 
     /**
      * Constructeur de la classe Employe.
@@ -112,11 +44,13 @@ public class Employe implements Serializable, Comparable<Employe>
         this.password = password;
         this.mail = mail;
         this.ligue = ligue;
+        this.dateArrivee = dateArrivee;
+        this.dateDepart= dateDepart;
 
 
         // Vérification des dates invalides (si elles sont dans le passé)
-        if (dateArrivee != null && dateArrivee.isBefore(LocalDate.now())) {
-            throw new DateInvalideException("La date d'arrivée ne peut pas être dans le passé.");
+        if (dateArrivee != null && dateArrivee.isAfter(LocalDate.now())) {
+            throw new DateInvalideException("La date d'arrivée ne peut pas être dans le futur.");
         }
 
         if (dateDepart != null && dateDepart.isBefore(LocalDate.now())) {
@@ -241,9 +175,7 @@ public class Employe implements Serializable, Comparable<Employe>
      * 
      * @return La ligue de l'employé.
      */
-    public Ligue getLigue() {
-        return ligue;
-    }
+  
 
     /**
      * Retourne la date d'arrivée de l'employé.
@@ -333,7 +265,14 @@ public class Employe implements Serializable, Comparable<Employe>
             res += ligue.toString(); 
         return res + ")";
     }
-}
+
+
+
+//@Override
+//public int compareTo(Employe o) {
+//	// TODO Auto-generated method stub
+//	return 0;
+//}
 }
 
 

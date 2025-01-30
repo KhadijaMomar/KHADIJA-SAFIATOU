@@ -3,6 +3,7 @@ package personnel;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+
 /**
  * Employé d'une ligue hébergée par la M2L. Certains peuvent 
  * être administrateurs des employés de leur ligue.
@@ -17,10 +18,9 @@ public class Employe implements Serializable, Comparable<Employe>
 	private String nom, prenom, password, mail;
 	private Ligue ligue;
 	private GestionPersonnel gestionPersonnel;
-	private LocalDate dateDepart; // Ajout de l'attribut Dep
-	private LocalDate dateArrivee; // Ajout de l'attribut Arr
+	private LocalDate date_depart, date_arrivee;
 	
-	Employe(GestionPersonnel gestionPersonnel, Ligue ligue, String nom, String prenom, String mail, String password ,LocalDate dateDepart,LocalDate dateArrivee)
+	Employe(GestionPersonnel gestionPersonnel, Ligue ligue, String nom, String prenom, String mail, String password, LocalDate date_depart, LocalDate date_arrivee)
 	{
 		this.gestionPersonnel = gestionPersonnel;
 		this.nom = nom;
@@ -28,9 +28,8 @@ public class Employe implements Serializable, Comparable<Employe>
 		this.password = password;
 		this.mail = mail;
 		this.ligue = ligue;
-		this.dateDepart = dateDepart;
-		this.dateArrivee = dateArrivee;
 	}
+	
 	
 	/**
 	 * Retourne vrai ssi l'employé est administrateur de la ligue 
@@ -60,6 +59,19 @@ public class Employe implements Serializable, Comparable<Employe>
 	 * Retourne le nom de l'employé.
 	 * @return le nom de l'employé. 
 	 */
+	
+	public LocalDate getDateDepart(){
+		return date_depart;
+	}
+	public void setDateDepart(LocalDate date_depart){
+		this.date_depart = date_depart;
+	}
+	public LocalDate getDateArrivee(){
+		return date_arrivee;
+	}
+	public void setDateArrivee(LocalDate date_arrivee){
+		this.date_arrivee = date_arrivee;
+	}
 	
 	public String getNom()
 	{
@@ -148,55 +160,6 @@ public class Employe implements Serializable, Comparable<Employe>
 	{
 		return ligue;
 	}
-	
-	/*******************************************************************************************
-	 */	
-	
-	/**
-	 * Retourne la Date à laquelle l'employé est Arrivé.
-	 * @return dateArrivee à laquelle l'employé est Arrive.
-	 */
-	
-	public LocalDate getDateArrive()
-	{
-		return dateArrivee;
-	}
-	/**
-	 * Change la Date d'arrive de l'employé.
-	 * @param dateArrivee la nouvelle dateArrivee de l'employé.
-	 */
-
-	public void setDateArrivee(LocalDate dateArrivee)
-	{
-		this.dateArrivee = dateArrivee;
-	}
-	
-	
-	/**
-	 * Retourne la Date à laquelle l'employé est Parti.
-	 * @return dateDepart à laquelle l'employé est Parti.
-	 */	
-	public LocalDate getDateDepart()
-	{
-		return dateDepart;
-	}
-	/**
-	 * Change la date de depart de l'employé.
-	 * @param dateDepart la nouvelle date de Depart de l'employé.
-	 */
-
-	public void setDateDepart(LocalDate dateDepart)
-	{
-		this.dateDepart = dateDepart;
-	}
-
-	/*******************************************************************************************
-	 /	
-
-	
-	
-	
-	
 
 	/**
 	 * Supprime l'employé. Si celui-ci est un administrateur, le root

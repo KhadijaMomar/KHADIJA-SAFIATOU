@@ -8,7 +8,7 @@ import java.time.LocalDate;
 =======
 import personnel.DateInvalideException;
 import personnel.DateIncoherenteException;
->>>>>>> 8ce2eef93f83170318359207081ae5b1a9733d24
+
 /**
  * Employé d'une ligue hébergée par la M2L. Certains peuvent 
  * être administrateurs des employés de leur ligue.
@@ -22,9 +22,9 @@ public class Employe implements Serializable, Comparable<Employe> {
     private Ligue ligue;
     private GestionPersonnel gestionPersonnel;
     private LocalDate dateDepart; 
-    private LocalDate dateArrivee; 
+    private LocalDate dateArrivee; }
 
-<<<<<<< HEAD
+
 public class Employe implements Serializable, Comparable<Employe>
 {
 	private static final long serialVersionUID = 4795721718037994734L;
@@ -90,7 +90,7 @@ public class Employe implements Serializable, Comparable<Employe>
 	{
 		return nom;
 	}
-=======
+
     /**
      * Constructeur de la classe Employe.
      * 
@@ -112,7 +112,7 @@ public class Employe implements Serializable, Comparable<Employe>
         this.password = password;
         this.mail = mail;
         this.ligue = ligue;
->>>>>>> 8ce2eef93f83170318359207081ae5b1a9733d24
+
 
         // Vérification des dates invalides (si elles sont dans le passé)
         if (dateArrivee != null && dateArrivee.isBefore(LocalDate.now())) {
@@ -160,7 +160,7 @@ public class Employe implements Serializable, Comparable<Employe>
         return nom;
     }
 
-<<<<<<< HEAD
+
 	/**
 	 * Retourne la ligue à laquelle l'employé est affecté.
 	 * @return la ligue à laquelle l'employé est affecté.
@@ -170,7 +170,7 @@ public class Employe implements Serializable, Comparable<Employe>
 	{
 		return ligue;
 	}
-=======
+
     /**
      * Modifie le nom de l'employé.
      * 
@@ -215,7 +215,7 @@ public class Employe implements Serializable, Comparable<Employe>
     public void setMail(String mail) {
         this.mail = mail;
     }
->>>>>>> 8ce2eef93f83170318359207081ae5b1a9733d24
+
 
     /**
      * Vérifie si le mot de passe passé en paramètre correspond à celui de l'employé.
@@ -333,6 +333,7 @@ public class Employe implements Serializable, Comparable<Employe>
             res += ligue.toString(); 
         return res + ")";
     }
+}
 }
 
 

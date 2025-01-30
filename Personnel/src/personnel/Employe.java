@@ -59,7 +59,7 @@ public class Employe implements Serializable, Comparable<Employe> {
 
         // Vérification des dates incohérentes (si la date de départ est avant la date d'arrivée)
         if (dateArrivee != null && dateDepart != null && dateDepart.isBefore(dateArrivee)) {
-            throw new DateIncoherenteException("La date de départ ne peut pas être avant la date d'arrivée.");
+            throw new DateIncoherenteException("La date de départ ne peut pas être avant la date d'arrivée de l'employe.");
         }
 
         this.dateArrivee = dateArrivee; 

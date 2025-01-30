@@ -3,7 +3,6 @@ package commandLine;
 import static commandLineMenus.rendering.examples.util.InOut.getString;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 
 import commandLineMenus.List;
@@ -93,69 +92,29 @@ public class LigueConsole
 				(element) -> editerLigue(element)
 				);
 	}
-	
-	/*private Option ajouterEmploye(final Ligue ligue)
+		
+	private Option ajouterEmploye(final Ligue ligue)
 	{
-		return new Option("ajouter un employé", "a",
-				() -> 
-				{
-					ligue.addEmploye(getString("nom : "), 
-						getString("prenom : "), 
-						getString("mail : "), 
-						getString("password : "));
-				}
-		);
-	}*/
-	
-	private Option ajouterEmploye(final Ligue ligue) {
-	    return new Option("Ajouter un employé", "a", () -> {
-	        // Demander les informations de base
-	        String nom = getString("Nom : ");
-	        String prenom = getString("Prénom : ");
-	        String mail = getString("Mail : ");
-	        String password = getString("Password : ");
-
-	       
-	     // Demander la date d'arrivée
-	        LocalDate dateArrivee = null;
-	        try {
-	            // Saisie de la date et conversion en LocalDate
-	            String dateArriveeStr = getString("Date d'arrivée (AAAA-MM-JJ) : ");
-	            dateArrivee = LocalDate.parse(dateArriveeStr);
-
-	            // Vérifier que la date n'est pas dans le futur
-	            if (dateArrivee.isAfter(LocalDate.now())) {
-	                throw new IllegalArgumentException("La date d'arrivée ne peut pas être dans le futur.");
+	    return new Option("Ajouter un employé", "a",
+	            () -> 
+	            {
+	            	
+	                String nom = getString("Nom de l'employé : ");
+	                String prenom = getString("Prénom de l'employé : ");
+	                String mail = getString("Mail de l'employé : ");
+	                String password = getString("Mot de passe de l'employé : ");
+	                
+	                String dateArriveeStr = getString("Date d'arrivée (format: YYYY-MM-DD) : ");
+	                LocalDate dateArrivee = LocalDate.parse(dateArriveeStr); // Convertir en LocalDate
+	                String dateDepartStr = getString("Date de départ (format: YYYY-MM-DD) (laissez vide si pas de départ) : ");
+	                LocalDate dateDepart = dateDepartStr.isEmpty() ? null : LocalDate.parse(dateDepartStr); // Si vide, assigner null
+	                
+	                // Ajouter l'employé avec les dates 
+	                ligue.addEmploye(nom, prenom, mail, password, dateArrivee, dateDepart);
 	            }
-
-	        } catch (DateTimeParseException e) {
-	            // Gestion des erreurs de format de date
-	            throw new IllegalArgumentException("Format de date invalide. Utilisez le format AAAA-MM-JJ.");
-	        }
-
-	        // Vérifier que la date d'arrivée n'est pas null
-	        if (dateArrivee == null) {
-	            throw new IllegalArgumentException("Veuillez saisir la date d'arrivée de l'employé.");
-	        }
-	        
-	        
-	        
-	        // Demander la date de départ (optionnelle)
-	        LocalDate dateDepart = null;
-	        String dateDepartStr = getString("Date de départ (AAAA-MM-JJ, laissez vide si non applicable) : ");
-	        if (!dateDepartStr.isEmpty()) {
-	            dateDepart = LocalDate.parse(dateDepartStr);
-	        }
-
-	        // Ajouter l'employé avec les dates
-	        ligue.addEmploye(nom, prenom, mail, password, dateArrivee, dateDepart);
-	    });
+	    );
 	}
-	
-	
-	
-	
-	
+
 	
 	private Menu gererEmployes(Ligue ligue)
 	{

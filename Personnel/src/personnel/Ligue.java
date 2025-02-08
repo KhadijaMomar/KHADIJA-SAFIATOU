@@ -71,10 +71,14 @@ public class Ligue implements Serializable, Comparable<Ligue> {
      */
     public void setAdministrateur(Employe administrateur) {
         Employe root = gestionPersonnel.getRoot();
-        if (administrateur != root && administrateur.getLigue() != this)
-            throw new DroitsInsuffisants();
+        if (administrateur != root && administrateur.getLigue() != this) {
+            System.out.println("L'employé sélectionné n'a pas les droits suffisants pour être administrateur.");
+            return;
+        }
         this.administrateur = administrateur;
+        System.out.println("Nouvel administrateur : " + administrateur.getNom() + " " + administrateur.getPrenom());
     }
+
 
     /**
      * Retourne les employés de la ligue.

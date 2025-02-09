@@ -263,7 +263,7 @@ public class Employe implements Serializable, Comparable<Employe> {
             res += "super-utilisateur"; 
         else 
             res += ligue.toString(); 
-        return res + ")";
+        return res + ")" + " " + dateArrivee + " " + dateDepart;
     }
 
 

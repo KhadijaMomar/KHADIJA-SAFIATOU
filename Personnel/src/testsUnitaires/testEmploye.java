@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import personnel.*;
 import java.time.LocalDate;
 
-class TestEmploye {
+class testEmploye {
 
     private GestionPersonnel gestionPersonnel;
     private Ligue ligue;
@@ -101,7 +101,8 @@ class TestEmploye {
     void testRemoveAdministrateur() throws SauvegardeImpossible, DateInvalideException, DateIncoherenteException {
         Employe admin = ligue.addEmploye("Admin", "Test", "admin@test.com", "admin", null, null);
         ligue.setAdministrateur(admin);
-
+        //verifier que l'employer est bien defini
+        assertNotNull(ligue.getAdministrateur(), "L'administrateur doit être défini.");
         admin.remove();
         assertNull(ligue.getAdministrateur(), "L'administrateur doit être supprimé de la ligue.");
     }

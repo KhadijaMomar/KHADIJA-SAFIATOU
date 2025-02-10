@@ -50,17 +50,27 @@ public class EmployeConsole {
 
     private Option changerDataArrivee(final Employe employe) {
         return new Option("Changer Date D'arrivée", "a", () -> {
-            String dateStr = getString("Nouvelle Date Arrivée (format AAAA-MM-JJ) : ");
-            LocalDate dateArrivee = LocalDate.parse(dateStr); // Conversion de la chaîne en LocalDate
-  
+            try {
+                String dateStr = getString("Nouvelle Date Arrivée (format AAAA-MM-JJ) : ");
+                LocalDate dateArrivee = LocalDate.parse(dateStr); // Conversion de la chaîne en LocalDate
+                employe.setDateArrivee(dateArrivee); // Mise à jour de la date d'arrivée
+                System.out.println("Date d'arrivée modifiée : " + dateArrivee);
+            } catch (Exception e) {
+                System.out.println("Erreur de saisie : " + e.getMessage());
+            }
         });
     }
 
     private Option changerDateDepart(final Employe employe) {
         return new Option("Changer Date de Départ", "d", () -> {
-            String dateStr = getString("Nouvelle Date Départ (format AAAA-MM-JJ) : ");
-            LocalDate dateDepart = LocalDate.parse(dateStr); // Conversion de la chaîne en LocalDate
-            System.out.println("Date de départ modifiée : " + dateDepart);
+            try {
+                String dateStr = getString("Nouvelle Date Départ (format AAAA-MM-JJ) : ");
+                LocalDate dateDepart = LocalDate.parse(dateStr); // Conversion de la chaîne en LocalDate
+                employe.setDateDepart(dateDepart); // Mise à jour de la date de départ
+                System.out.println("Date de départ modifiée : " + dateDepart);
+            } catch (Exception e) {
+                System.out.println("Erreur de saisie : " + e.getMessage());
+            }
         });
     }
-}
+    }

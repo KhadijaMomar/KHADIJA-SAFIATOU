@@ -69,12 +69,10 @@ public class LigueConsole {
         menu.add(afficher(ligue));
         menu.add(gererEmployes(ligue));
         menu.add(changerNom(ligue));
-        menu.add(changerAdministrateur(ligue)); 
         menu.add(supprimer(ligue));
         menu.addBack("q");
         return menu;
     }
-
 
     // Option pour changer le nom d'une ligue
     private Option changerNom(final Ligue ligue) {
@@ -112,6 +110,7 @@ public class LigueConsole {
         menu.add(afficherEmployes(ligue));
         menu.add(ajouterEmploye(ligue));
         menu.add(selectionnerEmploye(ligue)); // Ajout de l'option pour sélectionner un employé
+        menu.add(changerAdministrateur(ligue)); // Ajout de l'option pour changer l'administrateur
         menu.addBack("q");
         return menu;
     }
@@ -132,8 +131,7 @@ public class LigueConsole {
         return menu;
     }
 
-   
- // Option pour modifier un employe
+    // Option pour modifier un employe
     private Option modifierEmploye(final Employe employe) {
         return new Option("Modifier l'employé", "m", () -> {
             employeConsole.editerEmploye(employe);
@@ -154,7 +152,8 @@ public class LigueConsole {
             ligue.remove();
         });
     }
-    // Option pour changer l'administrateur d'une ligu
+
+    // Option pour changer l'administrateur d'une ligue
     private Option changerAdministrateur(final Ligue ligue) {
         return new Option("Changer l'administrateur", "c", () -> {
             String nom = getString("Nom de l'administrateur : ");
@@ -171,25 +170,3 @@ public class LigueConsole {
         });
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

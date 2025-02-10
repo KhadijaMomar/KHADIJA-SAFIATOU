@@ -69,13 +69,19 @@ public class LigueConsole {
         menu.add(afficher(ligue));
         menu.add(gererEmployes(ligue));
         menu.add(changerNom(ligue));
+<<<<<<< HEAD
         menu.add(changerAdministrateur(ligue)); 
+=======
+>>>>>>> be70acf5aec251aebbfca95c934bff1e0ca2a271
         menu.add(supprimer(ligue));
         menu.addBack("q");
         return menu;
     }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> be70acf5aec251aebbfca95c934bff1e0ca2a271
     // Option pour changer le nom d'une ligue
     private Option changerNom(final Ligue ligue) {
         return new Option("Renommer", "r", () -> {
@@ -136,6 +142,7 @@ public class LigueConsole {
  // Option pour modifier un employe
     private Option modifierEmploye(final Employe employe) {
         return new Option("Modifier l'employé", "m", () -> {
+            // Assurez-vous que editerEmploye retourne un objet avec une méthode execute
             employeConsole.editerEmploye(employe);
         });
     }
@@ -154,6 +161,7 @@ public class LigueConsole {
             ligue.remove();
         });
     }
+<<<<<<< HEAD
     // Option pour changer l'administrateur d'une ligu
     private Option changerAdministrateur(final Ligue ligue) {
         return new Option("Changer l'administrateur", "c", () -> {
@@ -170,26 +178,6 @@ public class LigueConsole {
             }
         });
     }
+=======
+>>>>>>> be70acf5aec251aebbfca95c934bff1e0ca2a271
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -69,14 +69,12 @@ public class LigueConsole {
         menu.add(afficher(ligue));
         menu.add(gererEmployes(ligue));
         menu.add(changerNom(ligue));
-        menu.add(changerAdministrateur(ligue)); // l'option pour changer l'administrateur
+        menu.add(changerAdministrateur(ligue)); 
         menu.add(supprimer(ligue));
         menu.addBack("q");
         return menu;
     }
 
-    
-    
 
     // Option pour changer le nom d'une ligue
     private Option changerNom(final Ligue ligue) {
@@ -99,7 +97,6 @@ public class LigueConsole {
             String prenom = getString("Prénom de l'employé : ");
             String mail = getString("Mail de l'employé : ");
             String password = getString("Mot de passe de l'employé : ");
-
             String dateArriveeStr = getString("Date d'arrivée (format: YYYY-MM-DD) : ");
             LocalDate dateArrivee = LocalDate.parse(dateArriveeStr);
             String dateDepartStr = getString("Date de départ (format: YYYY-MM-DD) (laissez vide si pas de départ) : ");
@@ -135,8 +132,8 @@ public class LigueConsole {
         return menu;
     }
 
-    
- // Option pour modifier un employé
+   
+ // Option pour modifier un employe
     private Option modifierEmploye(final Employe employe) {
         return new Option("Modifier l'employé", "m", () -> {
             employeConsole.editerEmploye(employe);
@@ -157,8 +154,7 @@ public class LigueConsole {
             ligue.remove();
         });
     }
-    
-    // Option pour changer l'administrateur d'une ligue
+    // Option pour changer l'administrateur d'une ligu
     private Option changerAdministrateur(final Ligue ligue) {
         return new Option("Changer l'administrateur", "c", () -> {
             String nom = getString("Nom de l'administrateur : ");

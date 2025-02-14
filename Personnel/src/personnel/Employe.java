@@ -48,23 +48,15 @@ public class Employe implements Serializable, Comparable<Employe> {
         this.dateDepart= dateDepart;
 
 
-        // Vérification des dates invalides (si elles sont dans le passé)
-        if (dateArrivee != null && dateArrivee.isAfter(LocalDate.now())) {
-            throw new DateInvalideException("La date d'arrivée ne peut pas être dans le futur.");
+        try {
+            setDateArrivee(dateArrivee);
+            setDateDepart(dateDepart);
+        } catch (DateInvalideException | DateIncoherenteException e) {
+            System.out.println("❌ Erreur : " + e.getMessage());
+            this.dateArrivee = null;
+            this.dateDepart = null;
         }
-
-        if (dateDepart != null && dateDepart.isBefore(LocalDate.now())) {
-            throw new DateInvalideException("La date de départ ne peut pas être dans le passé.");
         }
-
-        // Vérification des dates incohérentes (si la date de départ est avant la date d'arrivée)
-        if (dateArrivee != null && dateDepart != null && dateDepart.isBefore(dateArrivee)) {
-            throw new DateIncoherenteException("La date de départ ne peut pas être avant la date d'arrivée de l'employe.");
-        }
-
-        this.dateArrivee = dateArrivee; 
-        this.dateDepart = dateDepart; 
-    }
 
     /**
      * Retourne vrai si l'employé est administrateur de la ligue passée en paramètre.
@@ -194,10 +186,10 @@ public class Employe implements Serializable, Comparable<Employe> {
      * @throws DateInvalideException Si la date d'arrivée est dans le passé.
      */
     public void setDateArrivee(LocalDate dateArrivee) {
-        if (dateArrivee != null && dateArrivee.isBefore(LocalDate.now())) {
-            throw new DateInvalideException("La date d'arrivée ne peut pas être dans le passé.");
-        }
-
+    	 if (dateArrivee == null) {
+    	        this.dateArrivee = null;
+    	        return;
+    	    }
         if (dateArrivee != null && dateDepart != null && dateDepart.isBefore(dateArrivee)) {
             throw new DateIncoherenteException("La date de départ ne peut pas être avant la date d'arrivée.");
         }
@@ -222,10 +214,10 @@ public class Employe implements Serializable, Comparable<Employe> {
      * @throws DateInvalideException Si la date de départ est dans le passé.
      */
     public void setDateDepart(LocalDate dateDepart) {
-        if (dateDepart != null && dateDepart.isBefore(LocalDate.now())) {
-            throw new DateInvalideException("La date de départ ne peut pas être dans le passé.");
-        }
-
+    	 if (dateDepart == null) {
+    	        this.dateDepart = null;
+    	        return;
+    	    }
         if (dateDepart != null && dateArrivee != null && dateDepart.isBefore(dateArrivee)) {
             throw new DateIncoherenteException("La date de départ ne peut pas être avant la date d'arrivée.");
         }

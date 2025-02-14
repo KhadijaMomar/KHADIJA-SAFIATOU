@@ -3,10 +3,13 @@ package commandLine;
 import static commandLineMenus.rendering.examples.util.InOut.getString;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 
 import commandLineMenus.ListOption;
 import commandLineMenus.Menu;
 import commandLineMenus.Option;
+import personnel.DateIncoherenteException;
+import personnel.DateInvalideException;
 import personnel.Employe;
 
 public class EmployeConsole {
@@ -48,6 +51,8 @@ public class EmployeConsole {
         return new Option("Changer le password", "x", () -> employe.setPassword(getString("Nouveau password : ")));
     }
 
+    
+    
     private Option changerDataArrivee(final Employe employe) {
         return new Option("Changer Date D'arrivée", "a", () -> {
             try {
@@ -55,8 +60,13 @@ public class EmployeConsole {
                 LocalDate dateArrivee = LocalDate.parse(dateStr); // Conversion de la chaîne en LocalDate
                 employe.setDateArrivee(dateArrivee); // Mise à jour de la date d'arrivée
                 System.out.println("Date d'arrivée modifiée : " + dateArrivee);
+            } catch (DateTimeParseException e) {
+                System.out.println("Format de date invalide. Utilisez le format AAAA-MM-JJ.");
+            } catch (DateInvalideException | DateIncoherenteException e) {
+                System.out.println("Erreur : " + e.getMessage());
             } catch (Exception e) {
-                System.out.println("Erreur de saisie : " + e.getMessage());
+                System.out.println("Une erreur inattendue s'est produite.");
+                e.printStackTrace(); // Debugging
             }
         });
     }
@@ -68,8 +78,13 @@ public class EmployeConsole {
                 LocalDate dateDepart = LocalDate.parse(dateStr); // Conversion de la chaîne en LocalDate
                 employe.setDateDepart(dateDepart); // Mise à jour de la date de départ
                 System.out.println("Date de départ modifiée : " + dateDepart);
+            } catch (DateTimeParseException e) {
+                System.out.println("Format de date invalide. Utilisez le format AAAA-MM-JJ.");
+            } catch (DateInvalideException | DateIncoherenteException e) {
+                System.out.println("Erreur : " + e.getMessage());
             } catch (Exception e) {
-                System.out.println("Erreur de saisie : " + e.getMessage());
+                System.out.println("Une erreur inattendue s'est produite.");
+                e.printStackTrace(); // Debugging
             }
         });
     }

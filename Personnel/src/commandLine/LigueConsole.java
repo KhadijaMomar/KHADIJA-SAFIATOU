@@ -3,7 +3,10 @@ package commandLine;
 import static commandLineMenus.rendering.examples.util.InOut.getString;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 import commandLineMenus.List;
 import commandLineMenus.Menu;
@@ -87,7 +90,26 @@ public class LigueConsole {
                 () -> new ArrayList<>(gestionPersonnel.getLigues()),
                 (element) -> editerLigue(element));
     }
+    
 
+    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+    public static LocalDate saisirDate(Scanner scanner) {
+        while (true) {
+            System.out.print("Entrez une date (format yyyy-MM-dd) : ");
+            String dateStr = scanner.nextLine().trim();
+
+            try {
+                return LocalDate.parse(dateStr, DATE_FORMATTER);
+            } catch (DateTimeParseException e) {
+                System.out.println("❌ Erreur : Format de date invalide ! Veuillez saisir une date au format yyyy-MM-dd.");
+            } catch (DateInvalideException | DateIncoherenteException e) {
+                System.out.println("Erreur : " + e.getMessage());
+            }
+        }
+    }
+
+    Scanner scanner = new Scanner(System.in);
     // Option pour ajouter un nouvel employé à une ligue
     private Option ajouterEmploye(final Ligue ligue) {
         return new Option("Ajouter un employé", "a", () -> {
@@ -95,10 +117,12 @@ public class LigueConsole {
             String prenom = getString("Prénom de l'employé : ");
             String mail = getString("Mail de l'employé : ");
             String password = getString("Mot de passe de l'employé : ");
-            String dateArriveeStr = getString("Date d'arrivée (format: YYYY-MM-DD) : ");
-            LocalDate dateArrivee = LocalDate.parse(dateArriveeStr);
-            String dateDepartStr = getString("Date de départ (format: YYYY-MM-DD) (laissez vide si pas de départ) : ");
-            LocalDate dateDepart = dateDepartStr.isEmpty() ? null : LocalDate.parse(dateDepartStr);
+            System.out.println("Date d'arrivée (format yyyy-MM-dd) : ");
+            LocalDate dateArrivee = saisirDate(scanner);
+
+            System.out.println("Date de départ (laissez vide si pas de départ) : ");
+            String dateDepartStr = scanner.nextLine().trim();
+            LocalDate dateDepart = dateDepartStr.isEmpty() ? null : LocalDate.parse(dateDepartStr, DATE_FORMATTER);
 
             ligue.addEmploye(nom, prenom, mail, password, dateArrivee, dateDepart);
         });

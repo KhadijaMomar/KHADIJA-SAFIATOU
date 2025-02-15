@@ -3,8 +3,8 @@ package commandLine;
 import static commandLineMenus.rendering.examples.util.InOut.getString;
 
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
-
 import commandLineMenus.List;
 import commandLineMenus.Menu;
 import commandLineMenus.Option;
@@ -88,6 +88,8 @@ public class LigueConsole {
                 (element) -> editerLigue(element));
     }
 
+    
+    
     // Option pour ajouter un nouvel employé à une ligue
     private Option ajouterEmploye(final Ligue ligue) {
         return new Option("Ajouter un employé", "a", () -> {
@@ -95,21 +97,48 @@ public class LigueConsole {
             String prenom = getString("Prénom de l'employé : ");
             String mail = getString("Mail de l'employé : ");
             String password = getString("Mot de passe de l'employé : ");
-            String dateArriveeStr = getString("Date d'arrivée (format: YYYY-MM-DD) : ");
-            LocalDate dateArrivee = LocalDate.parse(dateArriveeStr);
-            String dateDepartStr = getString("Date de départ (format: YYYY-MM-DD) (laissez vide si pas de départ) : ");
-            LocalDate dateDepart = dateDepartStr.isEmpty() ? null : LocalDate.parse(dateDepartStr);
+
+            LocalDate dateArrivee = null;
+            while (dateArrivee == null) {
+                String dateArriveeStr = getString("Date d'arrivée (format: YYYY-MM-DD) : ");
+                try {
+                    dateArrivee = LocalDate.parse(dateArriveeStr);
+                } catch (DateTimeParseException e) {
+                    System.out.println("Format de date incorrect. Veuillez utiliser le format YYYY-MM-DD.");
+                }
+            }
+
+            LocalDate dateDepart = null;
+            boolean validDepartDate = false;
+            while (!validDepartDate) {
+                String dateDepartStr = getString("Date de départ (format: YYYY-MM-DD) (laissez vide si pas de départ) : ");
+                if (dateDepartStr.isEmpty()) {
+                    validDepartDate = true; 
+                } else {
+                    try {
+                        dateDepart = LocalDate.parse(dateDepartStr);
+                        if (dateDepart.isBefore(dateArrivee)) {
+                            System.out.println("La date de départ ne peut pas être antérieure à la date d'arrivée.");
+                        } else {
+                            validDepartDate = true;
+                        }
+                    } catch (DateTimeParseException e) {
+                        System.out.println("Format de date incorrect. Veuillez utiliser le format YYYY-MM-DD.");
+                    }
+                }
+            }
 
             ligue.addEmploye(nom, prenom, mail, password, dateArrivee, dateDepart);
         });
     }
 
+    
     // Menu pour gérer les employés d'une ligue
     private Menu gererEmployes(Ligue ligue) {
         Menu menu = new Menu("Gérer les employés de " + ligue.getNom(), "e");
         menu.add(afficherEmployes(ligue));
         menu.add(ajouterEmploye(ligue));
-        menu.add(selectionnerEmploye(ligue)); // Ajout de l'option pour sélectionner un employé
+        menu.add(selectionnerEmploye(ligue)); 
         menu.add(changerAdministrateur(ligue)); // Ajout de l'option pour changer l'administrateur
         menu.addBack("q");
         return menu;
@@ -153,20 +182,35 @@ public class LigueConsole {
         });
     }
 
-    // Option pour changer l'administrateur d'une ligue
+ // Option pour changer l'administrateur d'une ligue
+ 
     private Option changerAdministrateur(final Ligue ligue) {
         return new Option("Changer l'administrateur", "c", () -> {
-            String nom = getString("Nom de l'administrateur : ");
-            String prenom = getString("Prénom de l'administrateur : ");
-            Employe nouvelAdmin = ligue.getEmployes().stream()
-                                       .filter(e -> e.getNom().equals(nom) && e.getPrenom().equals(prenom))
-                                       .findFirst()
-                                       .orElse(null);
-            if (nouvelAdmin != null) {
-                ligue.setAdministrateur(nouvelAdmin);
-            } else {
-                System.out.println("Employé non trouvé.");
+            java.util.List<Employe> employes = new java.util.ArrayList<>(ligue.getEmployes());
+
+            // Pour_afficher "Aucun employé" si la liste est vide
+            if (employes.isEmpty()) {
+                System.out.println("Aucun employé dans cette ligue.");
+                return; // Quitter la méthode
+            }
+
+            // ici_pour_fficher la liste des employés
+            System.out.println("Liste des employés :");
+            for (int i = 0; i < employes.size(); i++) {
+                System.out.println((i + 1) + ". " + employes.get(i).getNom() + " " + employes.get(i).getPrenom());
+            }
+
+            // Gestion de la saisie avec try-catch
+            try {
+                int choix = Integer.parseInt(getString("Choisissez le numéro de l'employé à désigner comme administrateur : ")) - 1;
+                ligue.setAdministrateur(employes.get(choix)); // Définir l'administrateur
+                System.out.println("L'administrateur a été changé avec succès.");
+            } catch (NumberFormatException e) {
+                System.out.println("Erreur : Veuillez entrer un numéro valide.");
+            } catch (IndexOutOfBoundsException e) {
+                System.out.println("Erreur : Numéro invalide. Veuillez choisir un numéro entre 1 et " + employes.size() + ".");
             }
         });
     }
+
 }

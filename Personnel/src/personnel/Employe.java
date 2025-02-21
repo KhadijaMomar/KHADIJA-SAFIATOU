@@ -2,26 +2,15 @@ package personnel;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import personnel.DateInvalideException;
-import personnel.DateIncoherenteException;
-import java.time.LocalDate;
 
-/**
- * Employé d'une ligue hébergée par la M2L. Certains peuvent 
- * être administrateurs des employés de leur ligue.
- * Un seul employé, rattaché à aucune ligue, est le root.
- * Il est impossible d'instancier directement un employé, 
- * il faut passer la méthode {@link Ligue#addEmploye addEmploye}.
- */
 public class Employe implements Serializable, Comparable<Employe> {
     private static final long serialVersionUID = 4795721718037994734L;
+    private int id; // Ajout de la variable d'instance id
     private String nom, prenom, password, mail;
     private Ligue ligue;
     private GestionPersonnel gestionPersonnel;
-    private LocalDate dateDepart; 
-    private LocalDate dateArrivee; 
-    
-    
+    private LocalDate dateDepart;
+    private LocalDate dateArrivee;
 
     /**
      * Constructeur de la classe Employe.
@@ -38,6 +27,10 @@ public class Employe implements Serializable, Comparable<Employe> {
      * @throws DateInvalideException Si la date d'arrivée ou de départ est dans le passé.
      */
     Employe(GestionPersonnel gestionPersonnel, Ligue ligue, String nom, String prenom, String mail, String password, LocalDate dateArrivee, LocalDate dateDepart) {
+        if (ligue == null) {
+            throw new IllegalArgumentException("L'employé doit être associé à une ligue.");
+        }
+
         this.gestionPersonnel = gestionPersonnel;
         this.nom = nom;
         this.prenom = prenom;
@@ -45,18 +38,27 @@ public class Employe implements Serializable, Comparable<Employe> {
         this.mail = mail;
         this.ligue = ligue;
         this.dateArrivee = dateArrivee;
-        this.dateDepart= dateDepart;
+        this.dateDepart = dateDepart;
+        this.id = -1; // Initialisation de l'ID à -1 (non inséré en base de données)
 
+        // Insérer l'employé dans la base de données
+        try {
+            this.id = gestionPersonnel.insert(this); // Appel à la méthode insert(Employe)
+        } catch (SauvegardeImpossible e) {
+            System.err.println("Erreur lors de l'insertion de l'employé : " + e.getMessage());
+        }
 
         try {
             setDateArrivee(dateArrivee);
             setDateDepart(dateDepart);
         } catch (DateInvalideException | DateIncoherenteException e) {
-            System.out.println("❌ Erreur : " + e.getMessage());
+            System.out.println(" Erreur : " + e.getMessage());
             this.dateArrivee = null;
             this.dateDepart = null;
         }
-        }
+    }
+
+
 
     /**
      * Retourne vrai si l'employé est administrateur de la ligue passée en paramètre.
@@ -132,7 +134,31 @@ public class Employe implements Serializable, Comparable<Employe> {
     public String getMail() {
         return mail;
     }
+    /**
+     * Retourne le_mp de l'employé.
+     * 
+     * @return Le_mp de l'employé.
+     */
+    
+    public String getPassword() {
+        return password;
+    }
+  
+    /**
+     * Retourne l'id de l'employé.
+     * 
+     * @return L'id de l'employé.
+     */  
+    // Getters et setters
+    public int getId() {
+        return id;
+    }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+    
+    
     /**
      * Modifie l'adresse e-mail de l'employé.
      * 
@@ -257,6 +283,10 @@ public class Employe implements Serializable, Comparable<Employe> {
             res += ligue.toString(); 
         return res + ")" + " " + dateArrivee + " " + dateDepart;
     }
+
+
+		
+	
 
 
 

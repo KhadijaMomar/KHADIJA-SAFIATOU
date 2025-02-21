@@ -45,6 +45,14 @@ public class Ligue implements Serializable, Comparable<Ligue> {
     public String getNom() {
         return nom;
     }
+    
+    /**
+     * Retourne l'id de la ligue.
+     * @return l'id de la ligue.
+     */
+    public int getId() {
+        return id;
+    }
 
     /**
      * Change le nom.
@@ -134,6 +142,12 @@ public class Ligue implements Serializable, Comparable<Ligue> {
     void remove(Employe employe) {
         employes.remove(employe);
     }
+    
+    
+    
+    
+    
+    
 
     /**
      * Supprime la ligue, entraîne la suppression de tous les employés

@@ -87,12 +87,7 @@ public class LigueConsole {
                 () -> new ArrayList<>(gestionPersonnel.getLigues()),
                 (element) -> editerLigue(element));
     }
-<<<<<<< HEAD
-
-=======
->>>>>>> 3e7681853b2bc1b66c40a3106f85e19bf3d630c3
-    
-    
+  
     // Option pour ajouter un nouvel employé à une ligue
     private Option ajouterEmploye(final Ligue ligue) {
         return new Option("Ajouter un employé", "a", () -> {
@@ -134,11 +129,7 @@ public class LigueConsole {
             ligue.addEmploye(nom, prenom, mail, password, dateArrivee, dateDepart);
         });
     }
-<<<<<<< HEAD
 
-    
-=======
->>>>>>> 3e7681853b2bc1b66c40a3106f85e19bf3d630c3
     // Menu pour gérer les employés d'une ligue
     private Menu gererEmployes(Ligue ligue) {
         Menu menu = new Menu("Gérer les employés de " + ligue.getNom(), "e");

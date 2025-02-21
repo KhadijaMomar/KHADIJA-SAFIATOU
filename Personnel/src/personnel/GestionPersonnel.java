@@ -21,8 +21,10 @@ public class GestionPersonnel implements Serializable
 	private static GestionPersonnel gestionPersonnel = null;
 	private SortedSet<Ligue> ligues;
 	private Employe root = new Employe(this, null, "root", "", "", "toor", null, null);
+	
 	public final static int SERIALIZATION = 1, JDBC = 2, 
-			TYPE_PASSERELLE = SERIALIZATION;  
+	        TYPE_PASSERELLE = JDBC;  //  SERIALIZATION modifier_par JDBC
+	 
 	private static Passerelle passerelle = TYPE_PASSERELLE == JDBC ? new jdbc.JDBC() : new serialisation.Serialization();	
 	
 	/**

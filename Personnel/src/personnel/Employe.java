@@ -30,7 +30,6 @@ public class Employe implements Serializable, Comparable<Employe> {
         if (ligue == null) {
             throw new IllegalArgumentException("L'employé doit être associé à une ligue.");
         }
-
         this.gestionPersonnel = gestionPersonnel;
         this.nom = nom;
         this.prenom = prenom;
@@ -59,7 +58,21 @@ public class Employe implements Serializable, Comparable<Employe> {
     }
 
 
+    
+    public Employe(GestionPersonnel gestionPersonnel, int id, String nom, String prenom, String mail, String password, LocalDate dateArrivee, LocalDate dateDepart, int ligueId) {
+        this.gestionPersonnel = gestionPersonnel;
+        this.id = id;
+        this.nom = nom;
+        this.prenom = prenom;
+        this.mail = mail;
+        this.password = password;
+        this.dateArrivee = dateArrivee;
+        this.dateDepart = dateDepart;
+        this.ligue = gestionPersonnel.getLigue(ligueId); // Récupère la ligue par son ID
+    }
 
+    
+    
     /**
      * Retourne vrai si l'employé est administrateur de la ligue passée en paramètre.
      * 

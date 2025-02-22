@@ -41,7 +41,7 @@ public class GestionPersonnel implements Serializable {
     /**
      * Constructeur privé pour empêcher l'instanciation directe.
      */
-    public GestionPersonnel() {
+    private GestionPersonnel() {
         if (gestionPersonnel != null) {
             throw new RuntimeException("Vous ne pouvez créer qu'une seule instance de cet objet.");
         }
@@ -68,6 +68,22 @@ public class GestionPersonnel implements Serializable {
         }
     }
 
+    
+    public Ligue getLigue(int id) {
+        for (Ligue ligue : ligues) {
+            if (ligue.getId() == id) {
+                return ligue;
+            }
+        }
+        return null; // Retourne null si aucune ligue n'est trouvée
+    }
+    
+    
+
+    
+    
+    
+  
 
     /**
      * Sauvegarde l'état de la gestion du personnel.

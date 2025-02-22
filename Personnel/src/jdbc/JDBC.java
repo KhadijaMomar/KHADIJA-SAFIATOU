@@ -117,7 +117,29 @@ public class JDBC implements Passerelle
 	        throw new SauvegardeImpossible(exception);
 	    }
 	}
+
+	@Override
+	public Employe getRoot() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 	
 	
+	 @Override
+	
+	    public boolean utilisateurExiste(String nomUtilisateur) {
+	        String query = "SELECT COUNT(*) FROM employe WHERE nom = ?";
+	        try (PreparedStatement stmt = connection.prepareStatement(query)) {
+	            stmt.setString(1, nomUtilisateur);
+	            try (ResultSet rs = stmt.executeQuery()) {
+	                if (rs.next()) {
+	                    return rs.getInt(1) > 0;
+	                }
+	            }
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	        return false;
+	    }
 	
 }

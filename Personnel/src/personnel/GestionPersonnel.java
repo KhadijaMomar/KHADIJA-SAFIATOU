@@ -14,7 +14,6 @@ import java.util.TreeSet;
  * d'une exécution précédente, c'est l'objet sauvegardé qui est
  * retourné.
  */
-
 public class GestionPersonnel implements Serializable {
     private static final long serialVersionUID = -105283113987886425L;
     private static GestionPersonnel gestionPersonnel = null;
@@ -33,10 +32,8 @@ public class GestionPersonnel implements Serializable {
      */
     public static GestionPersonnel getGestionPersonnel() {
         if (gestionPersonnel == null) {
-            gestionPersonnel = passerelle.getGestionPersonnel();
-            if (gestionPersonnel == null) {
-                gestionPersonnel = new GestionPersonnel();
-            }
+            gestionPersonnel = new GestionPersonnel();
+            gestionPersonnel.initialiserRoot(); // Initialise le root
         }
         return gestionPersonnel;
     }
@@ -50,15 +47,27 @@ public class GestionPersonnel implements Serializable {
         }
 
         ligues = new TreeSet<>();
-        gestionPersonnel = this;
+    }
 
-        // Crée le root lors du premier lancement
+    /**
+     * Initialise le root en vérifiant s'il existe déjà dans la base de données.
+     */
+  
+    private void initialiserRoot() {
         try {
-            addRoot("root", "toor");
+            // Charge le root depuis la base de données
+            root = passerelle.getRoot();
+
+            // Vérifiez si le root est null ou si l'utilisateur "root" existe déjà
+            if (root == null && !passerelle.utilisateurExiste("root")) {
+                // Si le root n'existe pas, créez-le
+                addRoot("root", "toor");
+            }
         } catch (SauvegardeImpossible e) {
-            System.err.println("Erreur lors de la création du root : " + e.getMessage());
+            System.err.println("Erreur lors de l'initialisation du root : " + e.getMessage());
         }
     }
+
 
     /**
      * Sauvegarde l'état de la gestion du personnel.

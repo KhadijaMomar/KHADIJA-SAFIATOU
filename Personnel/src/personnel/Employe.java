@@ -26,7 +26,7 @@ public class Employe implements Serializable, Comparable<Employe> {
      * @throws DateIncoherenteException Si la date de départ est avant la date d'arrivée (lorsque les deux dates sont non nulles).
      * @throws DateInvalideException Si la date d'arrivée ou de départ est dans le passé.
      */
-    Employe(GestionPersonnel gestionPersonnel, Ligue ligue, String nom, String prenom, String mail, String password, LocalDate dateArrivee, LocalDate dateDepart) {
+    public Employe(GestionPersonnel gestionPersonnel, Ligue ligue, String nom, String prenom, String mail, String password, LocalDate dateArrivee, LocalDate dateDepart) {
         if (ligue == null) {
             throw new IllegalArgumentException("L'employé doit être associé à une ligue.");
         }

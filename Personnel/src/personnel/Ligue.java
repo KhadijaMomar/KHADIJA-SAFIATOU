@@ -55,11 +55,16 @@ public class Ligue implements Serializable, Comparable<Ligue> {
     }
 
     /**
-     * Change le nom.
+     * Change le nom de la ligue.
      * @param nom le nouveau nom de la ligue.
      */
     public void setNom(String nom) {
         this.nom = nom;
+        try {
+            gestionPersonnel.update(this);
+        } catch (SauvegardeImpossible e) {
+            System.err.println("Erreur lors de la mise à jour de la ligue : " + e.getMessage());
+        }
     }
 
     /**
@@ -70,11 +75,9 @@ public class Ligue implements Serializable, Comparable<Ligue> {
         return administrateur;
     }
 
+   
     /**
-     * Fait de administrateur l'administrateur de la ligue.
-     * Lève DroitsInsuffisants si l'administrateur n'est pas 
-     * un employé de la ligue ou le root. Révoque les droits de l'ancien 
-     * administrateur.
+     * Change l'administrateur de la ligue.
      * @param administrateur le nouvel administrateur de la ligue.
      */
     public void setAdministrateur(Employe administrateur) {
@@ -84,9 +87,16 @@ public class Ligue implements Serializable, Comparable<Ligue> {
             return;
         }
         this.administrateur = administrateur;
+        try {
+            gestionPersonnel.update(this);
+        } catch (SauvegardeImpossible e) {
+            System.err.println("Erreur lors de la mise à jour de la ligue : " + e.getMessage());
+        }
         System.out.println("Nouvel administrateur : " + administrateur.getNom() + " " + administrateur.getPrenom());
     }
-
+    
+    
+    
 
     /**
      * Retourne les employés de la ligue.
@@ -141,13 +151,7 @@ public class Ligue implements Serializable, Comparable<Ligue> {
 
     void remove(Employe employe) {
         employes.remove(employe);
-    }
-    
-    
-    
-    
-    
-    
+    } 
 
     /**
      * Supprime la ligue, entraîne la suppression de tous les employés
@@ -166,4 +170,7 @@ public class Ligue implements Serializable, Comparable<Ligue> {
     public String toString() {
         return nom;
     }
+    
+       
+    
 }

@@ -192,4 +192,8 @@ public class GestionPersonnel implements Serializable {
             ligueRoot.setAdministrateur(root);
         }
     }
+    
+    public void update(Ligue ligue) throws SauvegardeImpossible {
+        passerelle.update(ligue);
+    }
 }

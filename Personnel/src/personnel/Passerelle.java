@@ -18,6 +18,8 @@ public interface Passerelle
 	public Employe getRoot();
 	
 	boolean utilisateurExiste(String nomUtilisateur);
+	
+	public void update(Ligue ligue) throws SauvegardeImpossible;
 }
 
 

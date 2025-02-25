@@ -20,6 +20,8 @@ public interface Passerelle
 	boolean utilisateurExiste(String nomUtilisateur);
 	
 	public void update(Ligue ligue) throws SauvegardeImpossible;
+	
+	public void update(Employe employe) throws SauvegardeImpossible;
 }
 
 

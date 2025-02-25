@@ -170,4 +170,27 @@ public class JDBC implements Passerelle {
             throw new SauvegardeImpossible(exception);
         }
     }
+
+    @Override
+    public void update(Employe employe) throws SauvegardeImpossible {
+        try {
+            // Mise à jour des informations de l'employé dans la base de données
+            PreparedStatement instruction = connection.prepareStatement(
+                "UPDATE employe SET nom = ?, prenom = ?, mail = ?, password = ?, date_arrivee = ?, date_depart = ?, ligue_id = ? WHERE id = ?"
+            );
+            instruction.setString(1, employe.getNom());
+            instruction.setString(2, employe.getPrenom());
+            instruction.setString(3, employe.getMail());
+            instruction.setString(4, employe.getPassword());
+            instruction.setDate(5, employe.getDateArrivee() != null ? java.sql.Date.valueOf(employe.getDateArrivee()) : null);
+            instruction.setDate(6, employe.getDateDepart() != null ? java.sql.Date.valueOf(employe.getDateDepart()) : null);
+            instruction.setInt(7, employe.getLigue() != null ? employe.getLigue().getId() : -1); // -1 si pas de ligue (root)
+            instruction.setInt(8, employe.getId());
+
+            instruction.executeUpdate();
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw new SauvegardeImpossible(exception);
+        }
+    }	
 }

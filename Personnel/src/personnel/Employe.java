@@ -117,8 +117,15 @@ public class Employe implements Serializable, Comparable<Employe> {
      * 
      * @param nom Le nouveau nom de l'employé.
      */
+   
+    
     public void setNom(String nom) {
         this.nom = nom;
+        try {
+            gestionPersonnel.update(this);
+        } catch (SauvegardeImpossible e) {
+            System.err.println("Erreur lors de la mise à jour de l'employé : " + e.getMessage());
+        }
     }
 
     /**
@@ -135,8 +142,14 @@ public class Employe implements Serializable, Comparable<Employe> {
      * 
      * @param prenom Le nouveau prénom de l'employé.
      */
+    
     public void setPrenom(String prenom) {
         this.prenom = prenom;
+        try {
+            gestionPersonnel.update(this);
+        } catch (SauvegardeImpossible e) {
+            System.err.println("Erreur lors de la mise à jour de l'employé : " + e.getMessage());
+        }
     }
 
     /**
@@ -177,10 +190,15 @@ public class Employe implements Serializable, Comparable<Employe> {
      * 
      * @param mail La nouvelle adresse e-mail de l'employé.
      */
+   
     public void setMail(String mail) {
         this.mail = mail;
+        try {
+            gestionPersonnel.update(this);
+        } catch (SauvegardeImpossible e) {
+            System.err.println("Erreur lors de la mise à jour de l'employé : " + e.getMessage());
+        }
     }
-
 
     /**
      * Vérifie si le mot de passe passé en paramètre correspond à celui de l'employé.
@@ -197,8 +215,15 @@ public class Employe implements Serializable, Comparable<Employe> {
      * 
      * @param password Le nouveau mot de passe de l'employé.
      */
+   
+    
     public void setPassword(String password) {
         this.password = password;
+        try {
+            gestionPersonnel.update(this);
+        } catch (SauvegardeImpossible e) {
+            System.err.println("Erreur lors de la mise à jour de l'employé : " + e.getMessage());
+        }
     }
 
     /**
@@ -225,15 +250,15 @@ public class Employe implements Serializable, Comparable<Employe> {
      * @throws DateInvalideException Si la date d'arrivée est dans le passé.
      */
     public void setDateArrivee(LocalDate dateArrivee) {
-    	 if (dateArrivee == null) {
-    	        this.dateArrivee = null;
-    	        return;
-    	    }
         if (dateArrivee != null && dateDepart != null && dateDepart.isBefore(dateArrivee)) {
             throw new DateIncoherenteException("La date de départ ne peut pas être avant la date d'arrivée.");
         }
-
         this.dateArrivee = dateArrivee;
+        try {
+            gestionPersonnel.update(this);
+        } catch (SauvegardeImpossible e) {
+            System.err.println("Erreur lors de la mise à jour de l'employé : " + e.getMessage());
+        }
     }
 
     /**
@@ -253,15 +278,15 @@ public class Employe implements Serializable, Comparable<Employe> {
      * @throws DateInvalideException Si la date de départ est dans le passé.
      */
     public void setDateDepart(LocalDate dateDepart) {
-    	 if (dateDepart == null) {
-    	        this.dateDepart = null;
-    	        return;
-    	    }
         if (dateDepart != null && dateArrivee != null && dateDepart.isBefore(dateArrivee)) {
             throw new DateIncoherenteException("La date de départ ne peut pas être avant la date d'arrivée.");
         }
-
         this.dateDepart = dateDepart;
+        try {
+            gestionPersonnel.update(this);
+        } catch (SauvegardeImpossible e) {
+            System.err.println("Erreur lors de la mise à jour de l'employé : " + e.getMessage());
+        }
     }
 
     /**

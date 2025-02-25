@@ -79,7 +79,9 @@ public class GestionPersonnel implements Serializable {
     }
     
     
-
+    public void update(Employe employe) throws SauvegardeImpossible {
+        passerelle.update(employe);
+    }
     
     
     

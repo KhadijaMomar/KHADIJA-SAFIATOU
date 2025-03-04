@@ -1,57 +1,66 @@
-package jdbc;
+  package jdbc;
 
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+    import personnel.GestionPersonnel;
+    import personnel.Ligue;
+    import personnel.Employe;
+    import personnel.SauvegardeImpossible;
+
+    import java.sql.*;
+    import java.time.LocalDate;
+    import java.sql.DriverManager;
+    import java.sql.PreparedStatement;
+    import java.sql.Connection;
+    import java.sql.ResultSet;
+    import java.sql.SQLException;
+    import java.sql.Statement;
+
 
 import personnel.*;
 
-public class JDBC implements Passerelle {
-    Connection connection;
+        public class JDBC implements Passerelle {
+            private Connection connection;
+            private GestionPersonnel gestionPersonnel; // Variable d'instance
 
-    // Constructeur pour établir la connexion à la base de données
-    public JDBC() {
-        try {
-            // Pour charger le pilote JDBC
-            Class.forName(Credentials.getDriverClassName());
-            // Pour etablir la connexion avec les informations d'identification
-            connection = DriverManager.getConnection(Credentials.getUrl(), Credentials.getUser(), Credentials.getPassword());
-        } catch (ClassNotFoundException e) {
-            System.out.println("Pilote JDBC non installé.");
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-    }
-
-    @Override
-    public GestionPersonnel getGestionPersonnel() {
-        GestionPersonnel gestionPersonnel = GestionPersonnel.getGestionPersonnel();
-        try {
-            // Pour charger les ligues depuis la base de données
-            String requete = "SELECT * FROM ligue";
-            Statement instruction = connection.createStatement();
-            ResultSet ligues = instruction.executeQuery(requete);
-            while (ligues.next()) {
-                gestionPersonnel.addLigue(ligues.getInt("id"), ligues.getString("nom"));
-            }
-
-            // Charger l'utilisateur root
-            Employe root = getRoot();
-            if (root != null) {
+            // Constructeur pour initialiser gestionPersonnel
+            public JDBC(GestionPersonnel gestionPersonnel) {
+                this.gestionPersonnel = gestionPersonnel; 
                 try {
-                    gestionPersonnel.addRoot(root.getNom(), root.getPassword());
-                } catch (SauvegardeImpossible e) {
-                    System.out.println("Erreur lors de l'ajout du root: " + e.getMessage());
+                    Class.forName(Credentials.getDriverClassName());
+                    connection = DriverManager.getConnection(Credentials.getUrl(), Credentials.getUser(), Credentials.getPassword());
+                } catch (ClassNotFoundException e) {
+                    System.out.println("Pilote JDBC non installé.");
+                } catch (SQLException e) {
+                    System.out.println(e);
                 }
             }
-        } catch (SQLException e) {
-            System.out.println(e);
-        }
-        return gestionPersonnel;
-    }
+        
+        
+         @Override
+            public GestionPersonnel getGestionPersonnel() {
+                try {
+                    // Charge les ligues depuis la base de données
+                    String requete = "SELECT * FROM ligue";
+                    Statement instruction = connection.createStatement();
+                    ResultSet ligues = instruction.executeQuery(requete);
+                    while (ligues.next()) {
+                        gestionPersonnel.addLigue(ligues.getInt("id"), ligues.getString("nom"));
+                    }
+
+                    // Charge le root depuis la base de données
+                    Employe root = getRoot();
+                    if (root != null) {
+                        gestionPersonnel.addRoot(root.getNom(), root.getPassword());
+                    } else {
+                        // Si le root n'existe pas, il sera créé lors de l'appel à addRoot()
+                        gestionPersonnel.addRoot("root", "toor");
+                    }
+                } catch (SQLException | SauvegardeImpossible e) {
+                    System.out.println("Erreur lors du chargement des données : " + e.getMessage());
+                }
+                return gestionPersonnel;
+            }
+    
+    
 
     @Override
     public void sauvegarderGestionPersonnel(GestionPersonnel gestionPersonnel) throws SauvegardeImpossible {
@@ -84,10 +93,11 @@ public class JDBC implements Passerelle {
         }
     }
 
+
+
     @Override
     public int insert(Employe employe) throws SauvegardeImpossible {
         try {
-            // Insérer un nouvel employé dans la base de données
             PreparedStatement instruction;
             instruction = connection.prepareStatement(
                 "INSERT INTO employe (nom, prenom, mail, password, date_arrivee, date_depart, ligue_id) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -99,7 +109,13 @@ public class JDBC implements Passerelle {
             instruction.setString(4, employe.getPassword());
             instruction.setDate(5, employe.getDateArrivee() != null ? java.sql.Date.valueOf(employe.getDateArrivee()) : null);
             instruction.setDate(6, employe.getDateDepart() != null ? java.sql.Date.valueOf(employe.getDateDepart()) : null);
-            instruction.setInt(7, employe.getLigue() != null ? employe.getLigue().getId() : -1); // -1 si pas de ligue (root)
+
+            // Gestion de ligue_id : NULL pour le root, sinon l'ID de la ligue
+            if (employe.getLigue() == null) {
+                instruction.setNull(7, java.sql.Types.INTEGER); // NULL pour le root
+            } else {
+                instruction.setInt(7, employe.getLigue().getId()); // ID de la ligue pour les autres employés
+            }
 
             instruction.executeUpdate();
             ResultSet id = instruction.getGeneratedKeys();
@@ -113,32 +129,32 @@ public class JDBC implements Passerelle {
             throw new SauvegardeImpossible(exception);
         }
     }
+    
 
     @Override
     public Employe getRoot() {
-        // Récupérer l'utilisateur root depuis la base de données
         String query = "SELECT * FROM employe WHERE nom = 'root'";
         try (PreparedStatement stmt = connection.prepareStatement(query)) {
             ResultSet rs = stmt.executeQuery();
             if (rs.next()) {
-                return new Employe(
-                    GestionPersonnel.getGestionPersonnel(),
-                    rs.getInt("id"),
-                    rs.getString("nom"),
-                    rs.getString("prenom"),
-                    rs.getString("mail"),
-                    rs.getString("password"),
-                    rs.getDate("date_arrivee") != null ? rs.getDate("date_arrivee").toLocalDate() : null,
-                    rs.getDate("date_depart") != null ? rs.getDate("date_depart").toLocalDate() : null,
-                    rs.getInt("ligue_id")
-                );
+                int ligueId = rs.getInt("ligue_id");
+                Ligue ligue = null;
+                if (!rs.wasNull()) { // Vérifie si ligue_id est NULL
+                    ligue = gestionPersonnel.getLigue(ligueId);
+                }
+                return new Employe(gestionPersonnel, rs.getInt("id"), rs.getString("nom"), rs.getString("prenom"), rs.getString("mail"), rs.getString("password"), rs.getDate("date_arrivee") != null ? rs.getDate("date_arrivee").toLocalDate() : null, rs.getDate("date_depart") != null ? rs.getDate("date_depart").toLocalDate() : null, ligue);
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null; // Retourne null si aucun root n'est trouvé
+        return null; // Retourne null si le root n'existe pas
     }
+    
+    
+    
 
+    
+    
     @Override
     public boolean utilisateurExiste(String nomUtilisateur) {
         // Pour vérifier si un utilisateur existe dans la base de données

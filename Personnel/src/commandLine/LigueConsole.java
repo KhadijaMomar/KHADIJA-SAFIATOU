@@ -75,9 +75,14 @@ public class LigueConsole {
     }
 
     // Option pour changer le nom d'une ligue
+    
     private Option changerNom(final Ligue ligue) {
         return new Option("Renommer", "r", () -> {
-            ligue.setNom(getString("Nouveau nom : "));
+            try {
+                ligue.setNom(getString("Nouveau nom : "));
+            } catch (SauvegardeImpossible e) {
+                System.err.println("Erreur lors de la mise à jour du nom de la ligue : " + e.getMessage());
+            }
         });
     }
 
@@ -126,7 +131,12 @@ public class LigueConsole {
                 }
             }
 
-            ligue.addEmploye(nom, prenom, mail, password, dateArrivee, dateDepart);
+            try {
+				ligue.addEmploye(nom, prenom, mail, password, dateArrivee, dateDepart);
+			} catch (SauvegardeImpossible e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         });
     }
 

@@ -2,6 +2,7 @@ package personnel;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Comparator;
 
 public class Employe implements Serializable, Comparable<Employe> {
     private static final long serialVersionUID = 4795721718037994734L;
@@ -26,9 +27,9 @@ public class Employe implements Serializable, Comparable<Employe> {
      * @throws DateIncoherenteException Si la date de départ est avant la date d'arrivée (lorsque les deux dates sont non nulles).
      * @throws DateInvalideException Si la date d'arrivée ou de départ est dans le passé.
      */
-    public Employe(GestionPersonnel gestionPersonnel, Ligue ligue, String nom, String prenom, String mail, String password, LocalDate dateArrivee, LocalDate dateDepart) {
-        if (ligue == null) {
-            throw new IllegalArgumentException("L'employé doit être associé à une ligue.");
+    public Employe(GestionPersonnel gestionPersonnel, Ligue ligue, String nom, String prenom, String mail, String password, LocalDate dateArrivee, LocalDate dateDepart) throws SauvegardeImpossible {
+        if (ligue == null && gestionPersonnel.getRoot() != null && this != gestionPersonnel.getRoot()) {
+            throw new IllegalArgumentException("L'employé doit être associé à une ligue, sauf s'il est root.");
         }
         this.gestionPersonnel = gestionPersonnel;
         this.nom = nom;
@@ -39,27 +40,10 @@ public class Employe implements Serializable, Comparable<Employe> {
         this.dateArrivee = dateArrivee;
         this.dateDepart = dateDepart;
         this.id = -1; // Initialisation de l'ID à -1 (non inséré en base de données)
-
-        // Insérer l'employé dans la base de données
-        try {
-            this.id = gestionPersonnel.insert(this); // Appel à la méthode insert(Employe)
-        } catch (SauvegardeImpossible e) {
-            System.err.println("Erreur lors de l'insertion de l'employé : " + e.getMessage());
-        }
-
-        try {
-            setDateArrivee(dateArrivee);
-            setDateDepart(dateDepart);
-        } catch (DateInvalideException | DateIncoherenteException e) {
-            System.out.println(" Erreur : " + e.getMessage());
-            this.dateArrivee = null;
-            this.dateDepart = null;
-        }
+        this.id = gestionPersonnel.insert(this); 
     }
 
-
-    
-    public Employe(GestionPersonnel gestionPersonnel, int id, String nom, String prenom, String mail, String password, LocalDate dateArrivee, LocalDate dateDepart, int ligueId) {
+    public Employe(GestionPersonnel gestionPersonnel, int id, String nom, String prenom, String mail, String password, LocalDate dateArrivee, LocalDate dateDepart, Ligue ligue) {
         this.gestionPersonnel = gestionPersonnel;
         this.id = id;
         this.nom = nom;
@@ -68,10 +52,11 @@ public class Employe implements Serializable, Comparable<Employe> {
         this.password = password;
         this.dateArrivee = dateArrivee;
         this.dateDepart = dateDepart;
-        this.ligue = gestionPersonnel.getLigue(ligueId); // Récupère la ligue par son ID
+        this.ligue = ligue; // La ligue peut être null pour le root
     }
 
     
+  
     
     /**
      * Retourne vrai si l'employé est administrateur de la ligue passée en paramètre.
@@ -101,6 +86,7 @@ public class Employe implements Serializable, Comparable<Employe> {
         return nom;
     }
 
+    
 
 	/**
 	 * Retourne la ligue à laquelle l'employé est affecté.

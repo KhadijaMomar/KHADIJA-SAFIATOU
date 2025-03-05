@@ -7,23 +7,25 @@ import java.util.TreeSet;
 
 /**
  * Gestion du personnel. Un seul objet de cette classe existe.
- * Il n'est pas possible d'instancier directement cette classe, 
- * la méthode {@link #getGestionPersonnel getGestionPersonnel} 
+ * Il n'est pas possible d'instancier directement cette classe,
+ * la méthode {@link #getGestionPersonnel getGestionPersonnel}
  * le fait automatiquement et retourne toujours le même objet.
- * Dans le cas où {@link #sauvegarder()} a été appelé lors 
+ * Dans le cas où {@link #sauvegarder()} a été appelé lors
  * d'une exécution précédente, c'est l'objet sauvegardé qui est
  * retourné.
  */
 public class GestionPersonnel implements Serializable {
     private static final long serialVersionUID = -105283113987886425L;
-    private static GestionPersonnel gestionPersonnel = null;
-    private SortedSet<Ligue> ligues;
-    private Employe root;
+    private static GestionPersonnel gestionPersonnel = null; // Instance unique de GestionPersonnel
+    private SortedSet<Ligue> ligues; // Ensemble des ligues gérées
+    private Employe root; // Employé root (super-utilisateur)
 
-    public final static int SERIALIZATION = 1, JDBC = 2, 
-            TYPE_PASSERELLE = JDBC;  // SERIALIZATION modifié par JDBC
+    // Constantes pour le type de passerelle (JDBC ou Serialization)
+    public final static int SERIALIZATION = 1, JDBC = 2;
+    public final static int TYPE_PASSERELLE = JDBC; // Utilisation de JDBC par défaut
 
-    private static Passerelle passerelle = TYPE_PASSERELLE == JDBC ? new jdbc.JDBC() : new serialisation.Serialization();
+    // Passerelle pour la persistance des données
+    private static Passerelle passerelle;
 
     /**
      * Retourne l'unique instance de cette classe.
@@ -32,7 +34,7 @@ public class GestionPersonnel implements Serializable {
      */
     public static GestionPersonnel getGestionPersonnel() {
         if (gestionPersonnel == null) {
-            gestionPersonnel = new GestionPersonnel();
+            gestionPersonnel = new GestionPersonnel(); // Crée une nouvelle instance si elle n'existe pas
             gestionPersonnel.initialiserRoot(); // Initialise le root
         }
         return gestionPersonnel;
@@ -45,47 +47,47 @@ public class GestionPersonnel implements Serializable {
         if (gestionPersonnel != null) {
             throw new RuntimeException("Vous ne pouvez créer qu'une seule instance de cet objet.");
         }
-
-        ligues = new TreeSet<>();
+        ligues = new TreeSet<>(); // Initialise l'ensemble des ligues
+        passerelle = TYPE_PASSERELLE == JDBC ? new jdbc.JDBC(this) : new serialisation.Serialization(); // Initialise la passerelle
     }
 
     /**
      * Initialise le root en vérifiant s'il existe déjà dans la base de données.
      */
-  
+   
+
+   
     private void initialiserRoot() {
         try {
-            // Charge le root depuis la base de données
-            root = passerelle.getRoot();
-
-            // Vérifiez si le root est null ou si l'utilisateur "root" existe déjà
-            if (root == null && !passerelle.utilisateurExiste("root")) {
-                // Si le root n'existe pas, créez-le
-                addRoot("root", "toor");
-            }
+            creerRootSiInexistant(); // Appel de la méthode métier
         } catch (SauvegardeImpossible e) {
             System.err.println("Erreur lors de l'initialisation du root : " + e.getMessage());
         }
     }
-
+   
     
+    /**
+     * Retourne la ligue correspondant à l'ID spécifié.
+     * @param id L'ID de la ligue.
+     * @return La ligue correspondante, ou null si aucune ligue n'est trouvée.
+     */
     public Ligue getLigue(int id) {
         for (Ligue ligue : ligues) {
             if (ligue.getId() == id) {
                 return ligue;
             }
         }
-        return null; // Retourne null si aucune ligue n'est trouvée
+        return null;
     }
-    
-    
+
+    /**
+     * Met à jour les informations d'un employé dans la base de données.
+     * @param employe L'employé à mettre à jour.
+     * @throws SauvegardeImpossible Si la mise à jour échoue.
+     */
     public void update(Employe employe) throws SauvegardeImpossible {
         passerelle.update(employe);
     }
-    
-    
-    
-  
 
     /**
      * Sauvegarde l'état de la gestion du personnel.
@@ -182,19 +184,36 @@ public class GestionPersonnel implements Serializable {
      * @param password Le mot de passe du root.
      * @throws SauvegardeImpossible Si l'insertion du root échoue.
      */
-    public void addRoot(String nom, String password) throws SauvegardeImpossible {
+
+    
+    
+    public void creerRootSiInexistant() throws SauvegardeImpossible {
         if (root == null) {
-            // Crée une ligue spéciale pour le root
-            Ligue ligueRoot = addLigue("Administration centrale");
-
-            // Crée le root et l'associe à la ligue spéciale
-            root = new Employe(this, ligueRoot, nom, "", "", password, null, null);
-
-            // Définit le root comme administrateur de la ligue spéciale
-            ligueRoot.setAdministrateur(root);
+            root = passerelle.getRoot(); // Charge le root depuis la base de données
+            if (root == null) {
+                // Si le root n'existe pas, créez-le
+                addRoot("root", "toor");
+            }
         }
     }
     
+    public void addRoot(String nom, String password) throws SauvegardeImpossible {
+        if (root == null) {
+            // Crée un employé sans ligue (ligue = null) et le marque comme root
+            root = new Employe(this, null, nom, "", "", password, null, null);
+            root.setId(passerelle.insert(root)); // Insère le root dans la base de données
+        }
+    }
+    
+  
+  
+    
+
+    /**
+     * Met à jour les informations d'une ligue dans la base de données.
+     * @param ligue La ligue à mettre à jour.
+     * @throws SauvegardeImpossible Si la mise à jour échoue.
+     */
     public void update(Ligue ligue) throws SauvegardeImpossible {
         passerelle.update(ligue);
     }

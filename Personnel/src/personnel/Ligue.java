@@ -58,13 +58,11 @@ public class Ligue implements Serializable, Comparable<Ligue> {
      * Change le nom de la ligue.
      * @param nom le nouveau nom de la ligue.
      */
-    public void setNom(String nom) {
+  
+    
+    public void setNom(String nom) throws SauvegardeImpossible {
         this.nom = nom;
-        try {
-            gestionPersonnel.update(this);
-        } catch (SauvegardeImpossible e) {
-            System.err.println("Erreur lors de la mise à jour de la ligue : " + e.getMessage());
-        }
+        gestionPersonnel.update(this); // L'exception est propagée
     }
 
     /**
@@ -116,7 +114,8 @@ public class Ligue implements Serializable, Comparable<Ligue> {
      * @param dateDepart la date de départ de l'employé (peut être null).
      * @return l'employé créé. 
      */
-    public Employe addEmploye(String nom, String prenom, String mail, String password, LocalDate dateArrivee, LocalDate dateDepart) {
+   
+    public Employe addEmploye(String nom, String prenom, String mail, String password, LocalDate dateArrivee, LocalDate dateDepart) throws SauvegardeImpossible {
         Employe employe = new Employe(this.gestionPersonnel, this, nom, prenom, mail, password, dateArrivee, dateDepart);
         employes.add(employe);
         return employe;
@@ -132,22 +131,11 @@ public class Ligue implements Serializable, Comparable<Ligue> {
      * @param dateArrivee la date d'arrivée de l'employé.
      * @return l'employé créé. 
      */
-    public Employe addEmploye(String nom, String prenom, String mail, String password, LocalDate dateArrivee) {
+    public Employe addEmploye(String nom, String prenom, String mail, String password, LocalDate dateArrivee)throws SauvegardeImpossible {
         return addEmploye(nom, prenom, mail, password, dateArrivee, null);
     }
 
-    /**
-     * Ajoute un employé dans la ligue avec une date d'arrivée par défaut
-     * (date actuelle) et une date de départ par défaut à null.
-     * @param nom le nom de l'employé.
-     * @param prenom le prénom de l'employé.
-     * @param mail l'adresse mail de l'employé.
-     * @param password le mot de passe de l'employé.
-     * @return l'employé créé. 
-     */
-    public Employe addEmploye(String nom, String prenom, String mail, String password) {
-        return addEmploye(nom, prenom, mail, password, LocalDate.now(), null);
-    }
+  
 
     void remove(Employe employe) {
         employes.remove(employe);

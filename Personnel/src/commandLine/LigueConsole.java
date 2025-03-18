@@ -18,7 +18,7 @@ public class LigueConsole {
     public LigueConsole(GestionPersonnel gestionPersonnel, EmployeConsole employeConsole) {
         this.gestionPersonnel = gestionPersonnel;
         this.employeConsole = employeConsole;
-    }
+    } 	
 
     // Menu principal pour gérer les ligues
     Menu menuLigues() {

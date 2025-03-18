@@ -27,7 +27,7 @@ public class Employe implements Serializable, Comparable<Employe> {
      * @throws DateIncoherenteException Si la date de départ est avant la date d'arrivée (lorsque les deux dates sont non nulles).
      * @throws DateInvalideException Si la date d'arrivée ou de départ est dans le passé.
      */
-    public Employe(GestionPersonnel gestionPersonnel, Ligue ligue, String nom, String prenom, String mail, String password, LocalDate dateArrivee, LocalDate dateDepart) throws SauvegardeImpossible {
+     Employe(GestionPersonnel gestionPersonnel, Ligue ligue, String nom, String prenom, String mail, String password, LocalDate dateArrivee, LocalDate dateDepart) throws SauvegardeImpossible {
         if (ligue == null && gestionPersonnel.getRoot() != null && this != gestionPersonnel.getRoot()) {
             throw new IllegalArgumentException("L'employé doit être associé à une ligue, sauf s'il est root.");
         }
@@ -43,7 +43,7 @@ public class Employe implements Serializable, Comparable<Employe> {
         this.id = gestionPersonnel.insert(this); 
     }
 
-    public Employe(GestionPersonnel gestionPersonnel, int id, String nom, String prenom, String mail, String password, LocalDate dateArrivee, LocalDate dateDepart, Ligue ligue) {
+     Employe(GestionPersonnel gestionPersonnel, int id, String nom, String prenom, String mail, String password, LocalDate dateArrivee, LocalDate dateDepart, Ligue ligue) {
         this.gestionPersonnel = gestionPersonnel;
         this.id = id;
         this.nom = nom;
@@ -55,6 +55,43 @@ public class Employe implements Serializable, Comparable<Employe> {
         this.ligue = ligue; // La ligue peut être null pour le root
     }
 
+     
+     
+     /**
+      * Méthode de fabrique pour créer une instance de Employe.
+      *
+      * @param gestionPersonnel La gestion du personnel à laquelle l'employé est rattaché.
+      * @param ligue La ligue à laquelle l'employé appartient.
+      * @param nom Le nom de l'employé.
+      * @param prenom Le prénom de l'employé.
+      * @param mail L'adresse e-mail de l'employé.
+      * @param password Le mot de passe de l'employé.
+      * @param dateArrivee La date d'arrivée de l'employé (peut être null).
+      * @param dateDepart La date de départ de l'employé (peut être null).
+      * @return Une nouvelle instance de Employe.
+      * @throws SauvegardeImpossible Si une erreur survient lors de la sauvegarde.
+      */
+     public static Employe createEmploye(GestionPersonnel gestionPersonnel, Ligue ligue, String nom, String prenom, String mail, String password, LocalDate dateArrivee, LocalDate dateDepart) throws SauvegardeImpossible {
+         return new Employe(gestionPersonnel, ligue, nom, prenom, mail, password, dateArrivee, dateDepart);
+     }
+
+     /**
+      * Méthode de fabrique pour créer une instance de Employe avec un ID.
+      *
+      * @param gestionPersonnel La gestion du personnel à laquelle l'employé est rattaché.
+      * @param id L'ID de l'employé.
+      * @param nom Le nom de l'employé.
+      * @param prenom Le prénom de l'employé.
+      * @param mail L'adresse e-mail de l'employé.
+      * @param password Le mot de passe de l'employé.
+      * @param dateArrivee La date d'arrivée de l'employé (peut être null).
+      * @param dateDepart La date de départ de l'employé (peut être null).
+      * @param ligue La ligue à laquelle l'employé appartient.
+      * @return Une nouvelle instance de Employe.
+      */
+     public static Employe createEmployeWithId(GestionPersonnel gestionPersonnel, int id, String nom, String prenom, String mail, String password, LocalDate dateArrivee, LocalDate dateDepart, Ligue ligue) {
+         return new Employe(gestionPersonnel, id, nom, prenom, mail, password, dateArrivee, dateDepart, ligue);
+     }
     
   
     
@@ -308,6 +345,8 @@ public class Employe implements Serializable, Comparable<Employe> {
         return res + ")" + " " + dateArrivee + " " + dateDepart;
     }
 
+    
+    
 
 		
 	

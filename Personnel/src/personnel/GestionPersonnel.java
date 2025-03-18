@@ -201,8 +201,7 @@ public class GestionPersonnel implements Serializable {
         if (root == null) {
             // Crée un employé sans ligue (ligue = null) et le marque comme root
             root = new Employe(this, null, nom, "", "", password, null, null);
-            root.setId(passerelle.insert(root)); // Insère le root dans la base de données
-        }
+                   }
     }
     
   

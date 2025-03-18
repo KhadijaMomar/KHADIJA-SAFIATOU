@@ -60,6 +60,10 @@ import personnel.*;
                 return gestionPersonnel;
             }
     
+         
+         
+         
+         
     
 
     @Override
@@ -130,7 +134,6 @@ import personnel.*;
         }
     }
     
-
     @Override
     public Employe getRoot() {
         String query = "SELECT * FROM employe WHERE nom = 'root'";
@@ -142,7 +145,17 @@ import personnel.*;
                 if (!rs.wasNull()) { // Vérifie si ligue_id est NULL
                     ligue = gestionPersonnel.getLigue(ligueId);
                 }
-                return new Employe(gestionPersonnel, rs.getInt("id"), rs.getString("nom"), rs.getString("prenom"), rs.getString("mail"), rs.getString("password"), rs.getDate("date_arrivee") != null ? rs.getDate("date_arrivee").toLocalDate() : null, rs.getDate("date_depart") != null ? rs.getDate("date_depart").toLocalDate() : null, ligue);
+                return Employe.createEmployeWithId(
+                    gestionPersonnel,
+                    rs.getInt("id"),
+                    rs.getString("nom"),
+                    rs.getString("prenom"),
+                    rs.getString("mail"),
+                    rs.getString("password"),
+                    rs.getDate("date_arrivee") != null ? rs.getDate("date_arrivee").toLocalDate() : null,
+                    rs.getDate("date_depart") != null ? rs.getDate("date_depart").toLocalDate() : null,
+                    ligue
+                );
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -210,3 +223,31 @@ import personnel.*;
         }
     }	
 }
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        

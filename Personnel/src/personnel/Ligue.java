@@ -154,7 +154,26 @@ public class Ligue implements Serializable, Comparable<Ligue> {
      * de la ligue.
      */
     public void remove() {
+        String nomLigue = this.nom;
+
+        try {
+            // Supprimer d'abord tous les employés de la ligue
+            for (Employe employe : new TreeSet<>(employes)) { // Copie pour éviter ConcurrentModificationException
+                employe.remove();
+            }
+
+            // Supprimer la ligue de la base de données
+            gestionPersonnel.getPasserelle().delete(this);
+        } catch (SauvegardeImpossible e) {
+            System.err.println("Erreur lors de la suppression de la ligue en base : " + e.getMessage());
+            return; 
+        }
+        
+        // Retire la ligue dans GestionPersonnel
         gestionPersonnel.remove(this);
+
+        // Affiche le message de confirmation après suppression
+        System.out.println("Ligue '" + nomLigue + "' supprimée avec tous ses employés.");
     }
 
     @Override

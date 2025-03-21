@@ -79,6 +79,12 @@ public class Serialization implements Passerelle {
 		// TODO Auto-generated method stub
 			
 		}
+	  
+	  @Override
+	    public void delete(Ligue ligue) throws SauvegardeImpossible {
+		// TODO Auto-generated method stub
+			
+		}
 
 	
 }

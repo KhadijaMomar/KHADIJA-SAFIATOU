@@ -134,7 +134,15 @@ public class Ligue implements Serializable, Comparable<Ligue> {
     public Employe addEmploye(String nom, String prenom, String mail, String password, LocalDate dateArrivee)throws SauvegardeImpossible {
         return addEmploye(nom, prenom, mail, password, dateArrivee, null);
     }
-
+    
+    
+    /**
+     * Ajoute un employé déjà existant à la ligue.
+     * @param employe L'employé à ajouter.
+     */
+    public void addEmploye(Employe employe) {
+        employes.add(employe);
+    }
   
 
     void remove(Employe employe) {

@@ -36,29 +36,50 @@ import personnel.*;
         
         
          @Override
-            public GestionPersonnel getGestionPersonnel() {
-                try {
-                    // Charge les ligues depuis la base de données
-                    String requete = "SELECT * FROM ligue";
-                    Statement instruction = connection.createStatement();
-                    ResultSet ligues = instruction.executeQuery(requete);
-                    while (ligues.next()) {
-                        gestionPersonnel.addLigue(ligues.getInt("id"), ligues.getString("nom"));
-                    }
+         public GestionPersonnel getGestionPersonnel() {
+        	    try {
+        	        // Charge les ligues depuis la base de données
+        	        String requete = "SELECT * FROM ligue";
+        	        Statement instruction = connection.createStatement();
+        	        ResultSet rsLigues = instruction.executeQuery(requete);
+        	        while (rsLigues.next()) {
+        	            gestionPersonnel.addLigue(rsLigues.getInt("id"), rsLigues.getString("nom"));
+        	        }
 
-                    // Charge le root depuis la base de données
-                    Employe root = getRoot();
-                    if (root != null) {
-                        gestionPersonnel.addRoot(root.getNom(), root.getPassword());
-                    } else {
-                        // Si le root n'existe pas, il sera créé lors de l'appel à addRoot()
-                        gestionPersonnel.addRoot("root", "toor");
-                    }
-                } catch (SQLException | SauvegardeImpossible e) {
-                    System.out.println("Erreur lors du chargement des données : " + e.getMessage());
-                }
-                return gestionPersonnel;
-            }
+        	        // Pour chaque ligue, charger ses employés
+        	        for (Ligue ligue : gestionPersonnel.getLigues()) {
+        	            String reqEmployes = "SELECT * FROM employe WHERE ligue_id = " + ligue.getId();
+        	            Statement stmtEmp = connection.createStatement();
+        	            ResultSet rsEmployes = stmtEmp.executeQuery(reqEmployes);
+        	            while (rsEmployes.next()) {
+        	                Employe employe = Employe.createEmployeWithId(
+        	                    gestionPersonnel,
+        	                    rsEmployes.getInt("id"),
+        	                    rsEmployes.getString("nom"),
+        	                    rsEmployes.getString("prenom"),
+        	                    rsEmployes.getString("mail"),
+        	                    rsEmployes.getString("password"),
+        	                    rsEmployes.getDate("date_arrivee") != null ? rsEmployes.getDate("date_arrivee").toLocalDate() : null,
+        	                    rsEmployes.getDate("date_depart") != null ? rsEmployes.getDate("date_depart").toLocalDate() : null,
+        	                    ligue
+        	                );
+        	                ligue.addEmploye(employe);
+        	            }
+        	        }
+
+        	        // Charge le root depuis la base de données
+        	        Employe root = getRoot();
+        	        if (root != null) {
+        	            gestionPersonnel.addRoot(root.getNom(), root.getPassword());
+        	        } else {
+        	            // Si le root n'existe pas, il sera créé lors de l'appel à addRoot()
+        	            gestionPersonnel.addRoot("root", "toor");
+        	        }
+        	    } catch (SQLException | SauvegardeImpossible e) {
+        	        System.out.println("Erreur lors du chargement des données : " + e.getMessage());
+        	    }
+        	    return gestionPersonnel;
+        	}
     
          
          

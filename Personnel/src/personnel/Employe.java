@@ -317,14 +317,27 @@ public class Employe implements Serializable, Comparable<Employe> {
      * 
      * @throws ImpossibleDeSupprimerRoot Si l'employé est le root.
      */
+  
+    
     public void remove() {
         Employe root = gestionPersonnel.getRoot();
-        if (this != root) {
-            if (estAdmin(getLigue()))
-                getLigue().setAdministrateur(root);
-            getLigue().remove(this);
-        } else
+        if (this == root) {
             throw new ImpossibleDeSupprimerRoot();
+        }
+        
+        try {
+            // Supprime l'employé de la base de données via la passerelle
+            gestionPersonnel.getPasserelle().delete(this);
+        } catch (SauvegardeImpossible e) {
+            System.err.println("Erreur lors de la suppression de l'employé en base : " + e.getMessage());
+            return; // On arrête la suppression si la suppression en base échoue
+        }
+        
+        // Si l'employé est administrateur, transférer les droits au root
+        if (estAdmin(getLigue()))
+            getLigue().setAdministrateur(root);
+        // Supprimer l'employé de la collection de la ligue
+        getLigue().remove(this);
     }
 
     @Override

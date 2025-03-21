@@ -73,6 +73,12 @@ public class Serialization implements Passerelle {
 		// TODO Auto-generated method stub
 		
 	}
+	
+	  @Override
+	    public void delete(Employe employe) throws SauvegardeImpossible {
+		// TODO Auto-generated method stub
+			
+		}
 
 	
 }

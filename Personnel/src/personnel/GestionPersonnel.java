@@ -206,7 +206,9 @@ public class GestionPersonnel implements Serializable {
     }
     
   
-  
+    public Passerelle getPasserelle() {
+        return passerelle;
+    }
     
 
     /**

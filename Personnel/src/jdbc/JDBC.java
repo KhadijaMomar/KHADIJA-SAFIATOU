@@ -242,7 +242,24 @@ import personnel.*;
             exception.printStackTrace();
             throw new SauvegardeImpossible(exception);
         }
-    }	
+    }
+    
+    @Override
+    public void delete(Employe employe) throws SauvegardeImpossible {
+        try {
+            // Prépare la requête SQL de suppression pour l'employé avec l'ID spécifié
+            PreparedStatement instruction = connection.prepareStatement("DELETE FROM employe WHERE id = ?");
+            instruction.setInt(1, employe.getId());
+            int rows = instruction.executeUpdate();
+            if (rows == 0) {
+                throw new SauvegardeImpossible("Aucun employé supprimé, vérifiez l'ID.");
+            }
+        } catch (SQLException exception) {
+            exception.printStackTrace();
+            throw new SauvegardeImpossible(exception);
+        }
+    }
+    
 }
         
         

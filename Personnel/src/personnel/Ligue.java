@@ -61,6 +61,10 @@ public class Ligue implements Serializable, Comparable<Ligue> {
   
     
     public void setNom(String nom) throws SauvegardeImpossible {
+    	if (nom == null || nom.trim().isEmpty()) {
+    	        System.err.println("Erreur : Le nom de la ligue ne peut pas être vide.");
+    	        return;
+    	}
         this.nom = nom;
         gestionPersonnel.update(this); // L'exception est propagée
     }

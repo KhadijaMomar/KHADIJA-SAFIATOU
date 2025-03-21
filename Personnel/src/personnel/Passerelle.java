@@ -8,7 +8,6 @@ public interface Passerelle
 	
 
 	  /**
-     * J'ai_imserer un employé dans la base de données.
      * 
      * @param employe L'employé à insérer.
      * @return L'identifiant de l'employé inséré.

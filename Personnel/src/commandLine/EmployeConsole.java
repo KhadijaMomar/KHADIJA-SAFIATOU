@@ -14,9 +14,6 @@ import personnel.Employe;
 
 public class EmployeConsole {
 
-    private Option afficher(final Employe employe) {
-        return new Option("Afficher l'employé", "l", () -> System.out.println(employe));
-    }
 
     ListOption<Employe> editerEmploye() {
         return this::editerEmploye;
@@ -33,6 +30,11 @@ public class EmployeConsole {
         menu.add(changerDateDepart(employe));  
         menu.addBack("q");
         return menu;
+    }
+    
+
+    private Option afficher(final Employe employe) {
+        return new Option("Afficher l'employé", "l", () -> System.out.println(employe));
     }
 
     private Option changerNom(final Employe employe) {

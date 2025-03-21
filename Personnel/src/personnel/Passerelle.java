@@ -14,7 +14,7 @@ public interface Passerelle
      * @return L'identifiant de l'employé inséré.
      * @throws SauvegardeImpossible Si l'insertion échoue.
      */
-    int insert(Employe employe) throws SauvegardeImpossible;
+    public int insert(Employe employe) throws SauvegardeImpossible;
 	public Employe getRoot();
 	
 	boolean utilisateurExiste(String nomUtilisateur);

@@ -36,6 +36,7 @@ public class GestionPersonnel implements Serializable {
         if (gestionPersonnel == null) {
             gestionPersonnel = new GestionPersonnel(); // Crée une nouvelle instance si elle n'existe pas
             gestionPersonnel.initialiserRoot(); // Initialise le root
+            gestionPersonnel = passerelle.getGestionPersonnel();
         }
         return gestionPersonnel;
     }

@@ -161,7 +161,7 @@ public class LigueConsole {
     // Menu pour les actions spécifiques à un employé (modifier ou supprimer)
     private Menu menuActionsEmploye(Ligue ligue, Employe employe) {
         Menu menu = new Menu("Actions pour " + employe.getNom() + " " + employe.getPrenom(), "a");
-        menu.add(modifierEmploye(employe));
+        menu.add(employeConsole.getEditerEmployeOption().getOption(employe));
         menu.add(supprimerEmploye(employe));
         menu.addBack("q");
         return menu;
@@ -170,9 +170,10 @@ public class LigueConsole {
     // Option pour modifier un employe
     private Option modifierEmploye(final Employe employe) {
         return new Option("Modifier l'employé", "m", () -> {
-            employeConsole.editerEmploye(employe);
+        	 employeConsole.getEditerEmployeOption().getOption(employe);
         });
     }
+   
 
     // Option pour supprimer un employé
     private Option supprimerEmploye(final Employe employe) {

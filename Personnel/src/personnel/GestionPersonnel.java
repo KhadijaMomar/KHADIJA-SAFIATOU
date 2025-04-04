@@ -219,4 +219,6 @@ public class GestionPersonnel implements Serializable {
     public void update(Ligue ligue) throws SauvegardeImpossible {
         passerelle.update(ligue);
     }
+    
+    
 }

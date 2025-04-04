@@ -15,11 +15,13 @@ import personnel.Employe;
 public class EmployeConsole {
 
 
-    ListOption<Employe> editerEmploye() {
+	public ListOption<Employe> getEditerEmployeOption() {
         return this::editerEmploye;
     }
 
-    Option editerEmploye(Employe employe) {
+    
+    
+	private Option editerEmploye(Employe employe) {
         Menu menu = new Menu("Gérer le compte " + employe.getNom(), "c");
         menu.add(afficher(employe));
         menu.add(changerNom(employe));

@@ -6,13 +6,6 @@ import java.util.Collections;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-/**
- * Représente une ligue. Chaque ligue est reliée à une liste
- * d'employés dont un administrateur. Comme il n'est pas possible
- * de créer un employé sans l'affecter à une ligue, le root est 
- * l'administrateur de la ligue jusqu'à ce qu'un administrateur 
- * lui ait été affecté avec la fonction {@link #setAdministrateur}.
- */
 public class Ligue implements Serializable, Comparable<Ligue> {
     private static final long serialVersionUID = 1L;
     private int id = -1;
@@ -21,10 +14,6 @@ public class Ligue implements Serializable, Comparable<Ligue> {
     private Employe administrateur;
     private GestionPersonnel gestionPersonnel;
 
-    /**
-     * Crée une ligue.
-     * @param nom le nom de la ligue.
-     */
     Ligue(GestionPersonnel gestionPersonnel, String nom) throws SauvegardeImpossible {
         this(gestionPersonnel, -1, nom);
         this.id = gestionPersonnel.insert(this);
@@ -38,146 +27,67 @@ public class Ligue implements Serializable, Comparable<Ligue> {
         this.id = id;
     }
 
-    /**
-     * Retourne le nom de la ligue.
-     * @return le nom de la ligue.
-     */
     public String getNom() {
         return nom;
     }
-    
-    /**
-     * Retourne l'id de la ligue.
-     * @return l'id de la ligue.
-     */
+
     public int getId() {
         return id;
     }
 
-    /**
-     * Change le nom de la ligue.
-     * @param nom le nouveau nom de la ligue.
-     */
-  
-    
-    public void setNom(String nom) throws SauvegardeImpossible {
-    	if (nom == null || nom.trim().isEmpty()) {
-    	        System.err.println("Le nom de la ligue ne peut pas être vide.");
-    	        return;
-    	}
+    public void setNom(String nom) throws SauvegardeImpossible, IllegalArgumentException { // Ajout de IllegalArgumentException
+        if (nom == null || nom.trim().isEmpty()) {
+            throw new IllegalArgumentException("Le nom de la ligue ne peut pas être vide."); // Lance une exception
+        }
         this.nom = nom;
-        gestionPersonnel.update(this); // L'exception est propagée
+        gestionPersonnel.update(this);
     }
 
-    /**
-     * Retourne l'administrateur de la ligue.
-     * @return l'administrateur de la ligue.
-     */
     public Employe getAdministrateur() {
         return administrateur;
     }
 
-   
-    /**
-     * Change l'administrateur de la ligue.
-     * @param administrateur le nouvel administrateur de la ligue.
-     */
-    public void setAdministrateur(Employe administrateur) {
+    public void setAdministrateur(Employe administrateur) throws IllegalArgumentException, SauvegardeImpossible { // Ajout d'exceptions
         Employe root = gestionPersonnel.getRoot();
         if (administrateur != root && administrateur.getLigue() != this) {
-            System.out.println("L'employé sélectionné n'a pas les droits suffisants pour être administrateur.");
-            return;
+            throw new IllegalArgumentException("L'employé sélectionné n'a pas les droits suffisants pour être administrateur."); // Lance une exception
         }
         this.administrateur = administrateur;
-        try {
-            gestionPersonnel.update(this);
-        } catch (SauvegardeImpossible e) {
-            System.err.println("Erreur lors de la mise à jour de la ligue : " + e.getMessage());
-        }
-        System.out.println("Nouvel administrateur : " + administrateur.getNom() + " " + administrateur.getPrenom());
+        gestionPersonnel.update(this);
     }
-    
-    
-    
 
-    /**
-     * Retourne les employés de la ligue.
-     * @return les employés de la ligue dans l'ordre alphabétique.
-     */
     public SortedSet<Employe> getEmployes() {
         return Collections.unmodifiableSortedSet(employes);
     }
 
-    /**
-     * Ajoute un employé dans la ligue avec des dates d'arrivée et de départ spécifiées.
-     * @param nom le nom de l'employé.
-     * @param prenom le prénom de l'employé.
-     * @param mail l'adresse mail de l'employé.
-     * @param password le mot de passe de l'employé.
-     * @param dateArrivee la date d'arrivée de l'employé.
-     * @param dateDepart la date de départ de l'employé (peut être null).
-     * @return l'employé créé. 
-     */
-   
     public Employe addEmploye(String nom, String prenom, String mail, String password, LocalDate dateArrivee, LocalDate dateDepart) throws SauvegardeImpossible {
         Employe employe = new Employe(this.gestionPersonnel, this, nom, prenom, mail, password, dateArrivee, dateDepart);
         employes.add(employe);
         return employe;
     }
 
-    /**
-     * Ajoute un employé dans la ligue avec une date d'arrivée spécifiée
-     * et une date de départ par défaut à null.
-     * @param nom le nom de l'employé.
-     * @param prenom le prénom de l'employé.
-     * @param mail l'adresse mail de l'employé.
-     * @param password le mot de passe de l'employé.
-     * @param dateArrivee la date d'arrivée de l'employé.
-     * @return l'employé créé. 
-     */
-    public Employe addEmploye(String nom, String prenom, String mail, String password, LocalDate dateArrivee)throws SauvegardeImpossible {
+    public Employe addEmploye(String nom, String prenom, String mail, String password, LocalDate dateArrivee) throws SauvegardeImpossible {
         return addEmploye(nom, prenom, mail, password, dateArrivee, null);
     }
-    
-    
-    /**
-     * Ajoute un employé déjà existant à la ligue.
-     * @param employe L'employé à ajouter.
-     */
+
     public void addEmploye(Employe employe) {
         employes.add(employe);
     }
-  
 
     void remove(Employe employe) {
         employes.remove(employe);
-    } 
+    }
 
-    /**
-     * Supprime la ligue, entraîne la suppression de tous les employés
-     * de la ligue.
-     */
-    public void remove() {
+    public void remove() throws SauvegardeImpossible, ImpossibleDeSupprimerRoot { // Propagande les exceptions
         String nomLigue = this.nom;
 
-        try {
-           
-            for (Employe employe : new TreeSet<>(employes)) { 
-                employe.remove();
-            }
-
-           
-            gestionPersonnel.getPasserelle().delete(this);
-        } catch (SauvegardeImpossible e) {
-            System.err.println("Erreur lors de la suppression de la ligue en base : " + e.getMessage());
-            return; 
+        for (Employe employe : new TreeSet<>(employes)) {
+            employe.remove(); // Supprime chaque employé (peut lancer ImpossibleDeSupprimerRoot)
         }
-        
-        
-        gestionPersonnel.remove(this);
 
-      
-        System.out.println("Ligue '" + nomLigue + "' supprimée.");
+        gestionPersonnel.getPasserelle().delete(this); // L'exception SauvegardeImpossible est déjà propagée par delete
+
+        gestionPersonnel.remove(this);
     }
 
     @Override
@@ -189,7 +99,4 @@ public class Ligue implements Serializable, Comparable<Ligue> {
     public String toString() {
         return nom;
     }
-    
-       
-    
 }

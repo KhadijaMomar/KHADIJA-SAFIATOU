@@ -72,7 +72,7 @@ import personnel.*;
         	        if (root != null) {
         	            gestionPersonnel.addRoot(root.getNom(), root.getPassword());
         	        } else {
-        	            // Si le root n'existe pas, il sera créé lors de l'appel à addRoot()
+        	            //Si le root n'existe pas, il sera créé lors de l'appel à addRoot()
         	            gestionPersonnel.addRoot("root", "toor");
         	        }
         	    } catch (SQLException | SauvegardeImpossible e) {

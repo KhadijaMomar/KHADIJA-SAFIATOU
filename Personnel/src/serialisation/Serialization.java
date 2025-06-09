@@ -86,5 +86,29 @@ public class Serialization implements Passerelle {
 			
 		}
 
+	@Override
+	public Employe getEmployeByNom(String nom) throws SauvegardeImpossible {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Employe getEmployeByMail(String mail) throws SauvegardeImpossible {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Employe getEmploye(int id) throws SauvegardeImpossible {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void close() throws SauvegardeImpossible {
+		// TODO Auto-generated method stub
+		
+	}
+
 	
 }

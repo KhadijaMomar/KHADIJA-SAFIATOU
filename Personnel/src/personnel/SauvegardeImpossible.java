@@ -16,6 +16,15 @@ public class SauvegardeImpossible extends Exception {
         super(cause);
     }
 
+    /**
+     * Nouveau constructeur prenant un message et une cause en paramètres.
+     * @param message Le message détaillé de l'erreur.
+     * @param cause La cause de l'exception (par exemple, une SQLException).
+     */
+    public SauvegardeImpossible(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     @Override
     public void printStackTrace() {
         super.printStackTrace();

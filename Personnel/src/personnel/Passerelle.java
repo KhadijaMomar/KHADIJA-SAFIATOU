@@ -1,33 +1,109 @@
 package personnel;
 
-public interface Passerelle 
-{
-	public GestionPersonnel getGestionPersonnel();
-	public void sauvegarderGestionPersonnel(GestionPersonnel gestionPersonnel)  throws SauvegardeImpossible;
-	public int insert(Ligue ligue) throws SauvegardeImpossible;
-	
+import java.time.LocalDate;
+import java.util.SortedSet;
 
-	  /**
-     * 
-     * @param employe L'employé à insérer.
-     * @return L'identifiant de l'employé inséré.
-     * @throws SauvegardeImpossible Si l'insertion échoue.
+/**
+ * Interface définissant les opérations de persistance pour la gestion du personnel.
+ * Cette interface permet d'abstraire la couche de stockage (par exemple, sérialisation, JDBC).
+ */
+public interface Passerelle {
+    // Méthodes d'insertion, mise à jour, suppression
+
+    /**
+     * Insère une nouvelle ligue dans le système de persistance.
+     * @param ligue La ligue à insérer.
+     * @return L'ID généré pour la ligue insérée.
+     * @throws SauvegardeImpossible Si une erreur se produit lors de la sauvegarde.
      */
-    public int insert(Employe employe) throws SauvegardeImpossible;
-	public Employe getRoot();
-	
-	boolean utilisateurExiste(String nomUtilisateur);
-	
-	public void update(Ligue ligue) throws SauvegardeImpossible;
-	
-	public void update(Employe employe) throws SauvegardeImpossible;
-	
-	public void delete(Employe employe) throws SauvegardeImpossible;
-	
-	public void delete(Ligue ligue) throws SauvegardeImpossible;
+    int insert(Ligue ligue) throws SauvegardeImpossible;
+
+    /**
+     * Insère un nouvel employé dans le système de persistance.
+     * @param employe L'employé à insérer.
+     * @return L'ID généré pour l'employé inséré.
+     * @throws SauvegardeImpossible Si une erreur se produit lors de la sauvegarde.
+     */
+    int insert(Employe employe) throws SauvegardeImpossible;
+
+    /**
+     * Met à jour les informations d'une ligue dans le système de persistance.
+     * @param ligue La ligue à mettre à jour.
+     * @throws SauvegardeImpossible Si une erreur se produit lors de la sauvegarde.
+     */
+    void update(Ligue ligue) throws SauvegardeImpossible;
+
+    /**
+     * Met à jour les informations d'un employé dans le système de persistance.
+     * @param employe L'employé à mettre à jour.
+     * @throws SauvegardeImpossible Si une erreur se produit lors de la sauvegarde.
+     */
+    void update(Employe employe) throws SauvegardeImpossible; // <-- Doit déclarer SauvegardeImpossible
+
+    /**
+     * Supprime une ligue du système de persistance.
+     * @param ligue La ligue à supprimer.
+     * @throws SauvegardeImpossible Si une erreur se produit lors de la suppression.
+     */
+    void delete(Ligue ligue) throws SauvegardeImpossible;
+
+    /**
+     * Supprime un employé du système de persistance.
+     * @param employe L'employé à supprimer.
+     * @throws SauvegardeImpossible Si une erreur se produit lors de la suppression.
+     */
+    void delete(Employe employe) throws SauvegardeImpossible;
+
+    /**
+     * Charge toutes les ligues et leurs employés depuis le système de persistance.
+     * Les objets Ligue et Employe sont ajoutés à l'instance de GestionPersonnel.
+     * @throws SauvegardeImpossible Si une erreur se produit lors du chargement.
+     */
+    void getGestionPersonnel() throws SauvegardeImpossible;
+
+    /**
+     * Récupère un employé par son nom.
+     * @param nom Le nom de l'employé.
+     * @return L'employé correspondant, ou null si non trouvé.
+     * @throws SauvegardeImpossible Si une erreur se produit lors de l'accès aux données.
+     */
+    Employe getEmployeByNom(String nom) throws SauvegardeImpossible;
+
+    /**
+     * Récupère un employé par son adresse mail.
+     * @param mail L'adresse mail de l'employé.
+     * @return L'employé correspondant, ou null si non trouvé.
+     * @throws SauvegardeImpossible Si une erreur se produit lors de l'accès aux données.
+     */
+    Employe getEmployeByMail(String mail) throws SauvegardeImpossible;
+
+    /**
+     * Récupère un employé par son ID.
+     * @param id L'ID de l'employé.
+     * @return L'employé correspondant, ou null si non trouvé.
+     * @throws SauvegardeImpossible Si une erreur se produit lors de l'accès aux données.
+     */
+    Employe getEmploye(int id) throws SauvegardeImpossible; 
+
+    /**
+     * Ferme les ressources de la passerelle (par exemple, la connexion à la base de données).
+     * @throws SauvegardeImpossible Si une erreur SQL se produit lors de la fermeture de la connexion.
+     */
+    void close() throws SauvegardeImpossible;
+
+    /**
+     * Sauvegarde l'état complet de la gestion du personnel.
+     * Pour JDBC, les modifications sont persistées directement, donc cette méthode ferme la connexion.
+     * @param gestionPersonnel L'instance de GestionPersonnel à sauvegarder.
+     * @throws SauvegardeImpossible Si une erreur de sauvegarde se produit.
+     */
+    void sauvegarderGestionPersonnel(GestionPersonnel gestionPersonnel) throws SauvegardeImpossible;
+
+	/**
+	 * Vérifie si un utilisateur existe par son nom d'utilisateur (mail ou nom).
+	 * @param nomUtilisateur Le nom d'utilisateur ou l'adresse mail à vérifier.
+	 * @return true si l'utilisateur existe, false sinon.
+	 * @throws SauvegardeImpossible Si une erreur de sauvegarde se produit.
+	 */
+	boolean utilisateurExiste(String nomUtilisateur) throws SauvegardeImpossible;
 }
-
-
-
-
-

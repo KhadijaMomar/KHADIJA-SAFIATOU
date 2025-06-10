@@ -1,6 +1,10 @@
 package jdbc;
 
 import personnel.*;
+
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.HashMap;
@@ -135,31 +139,60 @@ public class JDBC implements Passerelle {
         return -1; // Ne devrait pas arriver
     }
 
-    @Override
-    public int insert(Employe employe) throws SauvegardeImpossible {
-        String sql = "INSERT INTO employe (nom, prenom, mail, password, date_arrivee, date_depart, ligue_id, est_root) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"; // NOM CORRIGÉ
-        try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            pstmt.setString(1, employe.getNom());
-            pstmt.setString(2, employe.getPrenom());
-            pstmt.setString(3, employe.getMail());
-            pstmt.setString(4, employe.getPassword());
-            pstmt.setDate(5, employe.getDateArrivee() != null ? Date.valueOf(employe.getDateArrivee()) : null);
-            pstmt.setDate(6, employe.getDateDepart() != null ? Date.valueOf(employe.getDateDepart()) : null);
-            pstmt.setObject(7, employe.getLigue() != null ? employe.getLigue().getId() : null, Types.INTEGER);
-            pstmt.setBoolean(8, employe.estRoot()); // Sauvegarde le statut root
-            pstmt.executeUpdate();
-            try (ResultSet rs = pstmt.getGeneratedKeys()) {
-                if (rs.next()) {
-                    int id = rs.getInt(1);
-                    employesLoaded.put(id, employe); // Ajoute à la map des employés chargés
-                    return id;
-                }
+
+@Override
+public int insert(Employe employe) throws SauvegardeImpossible {
+    String sql = "INSERT INTO employe (nom, prenom, mail, password, date_arrivee, date_depart, ligue_id, est_root) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    try (PreparedStatement pstmt = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+        pstmt.setString(1, employe.getNom());
+        pstmt.setString(2, employe.getPrenom());
+        pstmt.setString(3, employe.getMail());
+
+        // Hash du mot de passe
+        String hashedPassword = hashPassword(employe.getPassword());
+        pstmt.setString(4, hashedPassword);
+
+        pstmt.setDate(5, employe.getDateArrivee() != null ? Date.valueOf(employe.getDateArrivee()) : null);
+        pstmt.setDate(6, employe.getDateDepart() != null ? Date.valueOf(employe.getDateDepart()) : null);
+        pstmt.setObject(7, employe.getLigue() != null ? employe.getLigue().getId() : null, Types.INTEGER);
+        pstmt.setBoolean(8, employe.estRoot());
+        pstmt.executeUpdate();
+        try (ResultSet rs = pstmt.getGeneratedKeys()) {
+            if (rs.next()) {
+                int id = rs.getInt(1);
+                employesLoaded.put(id, employe);
+                return id;
             }
-        } catch (SQLException e) {
-            throw new SauvegardeImpossible("Erreur lors de l'insertion de l'employé : " + e.getMessage(), e);
         }
-        return -1;
+    } catch (SQLException e) {
+        throw new SauvegardeImpossible("Erreur lors de l'insertion de l'employé : " + e.getMessage(), e);
     }
+    return -1;
+}
+
+/**
+ * Hash le mot de passe en utilisant SHA-256.
+ * @param password Le mot de passe à hasher.
+ * @return Le mot de passe hashé sous forme de chaîne hexadécimale.
+ */
+private String hashPassword(String password) {
+    try {
+        MessageDigest digest = MessageDigest.getInstance("SHA-256");
+        byte[] hashedBytes = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+        StringBuilder hexString = new StringBuilder();
+        for (byte b : hashedBytes) {
+            String hex = Integer.toHexString(0xff & b);
+            if (hex.length() == 1) {
+                hexString.append('0');
+            }
+            hexString.append(hex);
+        }
+        return hexString.toString();
+    } catch (NoSuchAlgorithmException e) {
+        throw new RuntimeException("Erreur lors du hachage du mot de passe : " + e.getMessage(), e);
+    }
+}
+
 
     @Override
     public void update(Ligue ligue) throws SauvegardeImpossible {

@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+import personnel.ImpossibleDeSupprimerRoot; // Si vous avez cette exception
 
 /**
  * Panneau de gestion des employés d'une ligue spécifique.
@@ -389,12 +390,66 @@ public class EmployeManagementPanel extends JPanel {
 	 editDialog.setVisible(true);
  }
 
-    private void deleteSelectedEmploye() {
-        int selectedRow = employeTable.getSelectedRow();
-        if (selectedRow != -1) {
-            JOptionPane.showMessageDialog(mainFrame, "Fonctionnalité Supprimer Employé non implémentée.", "Info", JOptionPane.INFORMATION_MESSAGE);
-        } else {
-            JOptionPane.showMessageDialog(mainFrame, "Veuillez sélectionner un employé à supprimer.", "Sélection requise", JOptionPane.WARNING_MESSAGE);
-        }
-    }
+ private void deleteSelectedEmploye() {
+     int selectedRow = employeTable.getSelectedRow();
+     if (selectedRow == -1) {
+         JOptionPane.showMessageDialog(mainFrame, "Veuillez sélectionner un employé à supprimer.", "Sélection requise", JOptionPane.WARNING_MESSAGE);
+         return;
+     }
+
+     // Récupère l'ID de l'employé à partir du modèle de table
+     // Assurez-vous que la colonne 0 contient bien l'ID de l'employé
+     int employeId = (Integer) tableModel.getValueAt(selectedRow, 0);
+
+     Employe employeToDelete = null;
+     // Tente de récupérer l'objet Employe réel depuis GestionPersonnel
+	 employeToDelete = mainFrame.getGestionPersonnel().getEmploye(employeId);
+
+	 if (employeToDelete == null) {
+	     JOptionPane.showMessageDialog(mainFrame, "Employé introuvable dans le système. Peut-être déjà supprimé.", "Erreur", JOptionPane.ERROR_MESSAGE);
+	     return;
+	 }
+
+	 // Vérifier si l'utilisateur essaie de supprimer l'employé root
+	 if (employeToDelete.estRoot()) {
+	     JOptionPane.showMessageDialog(mainFrame, "Vous ne pouvez pas supprimer le compte 'root' par cette interface. Utilisez la gestion du compte 'root' si vous souhaitez modifier ses informations.", "Opération non permise", JOptionPane.WARNING_MESSAGE);
+	     return;
+	 }
+
+	 // Vérifier si l'utilisateur essaie de supprimer l'administrateur de la ligue actuelle
+	 if (ligue.getAdministrateur() != null && ligue.getAdministrateur().equals(employeToDelete)) {
+	     JOptionPane.showMessageDialog(mainFrame, "Vous ne pouvez pas supprimer l'administrateur actuel de cette ligue. Veuillez d'abord désigner un autre administrateur pour cette ligue.", "Opération non permise", JOptionPane.WARNING_MESSAGE);
+	     return;
+	 }
+
+	 // Demande de confirmation
+	 int confirm = JOptionPane.showConfirmDialog(mainFrame,
+	         "Êtes-vous sûr de vouloir supprimer l'employé : " + employeToDelete.getNom() + " " + employeToDelete.getPrenom() + " ?",
+	         "Confirmer la suppression",
+	         JOptionPane.YES_NO_OPTION,
+	         JOptionPane.WARNING_MESSAGE);
+
+	 if (confirm == JOptionPane.YES_OPTION) {
+	     try {
+	         // Appelle la méthode de suppression de GestionPersonnel
+	         mainFrame.getGestionPersonnel().remove(employeToDelete);
+
+	         JOptionPane.showMessageDialog(mainFrame,
+	                 "Employé '" + employeToDelete.getNom() + " " + employeToDelete.getPrenom() + "' supprimé avec succès.",
+	                 "Employé supprimé",
+	                 JOptionPane.INFORMATION_MESSAGE);
+
+	         loadEmployes(); // Rafraîchit le tableau après la suppression
+	     } catch (SauvegardeImpossible ex) {
+	         JOptionPane.showMessageDialog(mainFrame, "Erreur lors de la suppression de l'employé : " + ex.getMessage(), "Erreur de sauvegarde", JOptionPane.ERROR_MESSAGE);
+	         ex.printStackTrace();
+	     } catch (IllegalArgumentException ex) {
+	         JOptionPane.showMessageDialog(mainFrame, "Erreur : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+	     } catch (ImpossibleDeSupprimerRoot ex) { // Cette exception devrait être interceptée avant, mais c'est une sécurité
+	         JOptionPane.showMessageDialog(mainFrame, "Erreur : " + ex.getMessage(), "Impossible de supprimer root", JOptionPane.ERROR_MESSAGE);
+	     } catch (DroitsInsuffisants ex) {
+	         JOptionPane.showMessageDialog(mainFrame, "Droits insuffisants pour supprimer cet employé : " + ex.getMessage(), "Accès refusé", JOptionPane.ERROR_MESSAGE);
+	     }
+	 }
+ }
 }

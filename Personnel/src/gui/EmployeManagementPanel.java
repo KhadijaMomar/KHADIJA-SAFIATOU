@@ -2,6 +2,7 @@
 package gui;
 
 import personnel.*;
+import java.util.stream.Collectors; 
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.table.DefaultTableModel;
@@ -30,7 +31,30 @@ public class EmployeManagementPanel extends JPanel {
     private JButton deleteButton;
     private JButton backButton;
     private JLabel panelTitleLabel;
+    
+    private void loadEmployes() {
+        tableModel.setRowCount(0); // Efface toutes les lignes existantes du tableau
 
+        // Récupère les employés de la ligue actuelle
+        Set<Employe> employesDeLaLigue = ligue.getEmployes();
+
+        // Trie les employés par nom et prénom pour un affichage cohérent
+        List<Employe> sortedEmployes = employesDeLaLigue.stream()
+                                                        .sorted(Comparator.comparing(Employe::getNom)
+                                                                            .thenComparing(Employe::getPrenom))
+                                                        .collect(Collectors.toList());
+
+        for (Employe employe : sortedEmployes) {
+            tableModel.addRow(new Object[]{
+                employe.getId(),
+                employe.getNom(),
+                employe.getPrenom(),
+                employe.getMail(),
+                employe.getDateArrivee() != null ? employe.getDateArrivee().toString() : "N/A",
+                employe.getDateDepart() != null ? employe.getDateDepart().toString() : "N/A"
+            });
+        }
+    }
     public EmployeManagementPanel(PersonnelGUI mainFrame, Ligue ligue) {
         this.mainFrame = mainFrame;
         this.ligue = ligue;
@@ -135,8 +159,114 @@ public class EmployeManagementPanel extends JPanel {
     }
 
     private void addEmploye() {
-        // Implémentation pour ajouter un employé
-        JOptionPane.showMessageDialog(mainFrame, "Fonctionnalité Ajouter Employé non implémentée.", "Info", JOptionPane.INFORMATION_MESSAGE);
+        JDialog addDialog = new JDialog(mainFrame, "Ajouter un Nouvel Employé", true);
+        addDialog.setLayout(new BorderLayout(10, 10));
+        addDialog.setBackground(Style.PRIMARY_BACKGROUND);
+        addDialog.getRootPane().setBorder(Style.PADDING_BORDER); // Ajouter un padding
+
+        // Panneau pour les champs de saisie
+        JPanel formPanel = new JPanel(new GridBagLayout());
+        formPanel.setBackground(Style.SECONDARY_BACKGROUND);
+        formPanel.setBorder(new EmptyBorder(15, 15, 15, 15)); // Padding interne
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.insets = new Insets(8, 8, 8, 8); // Espacement entre les composants
+        gbc.fill = GridBagConstraints.HORIZONTAL;
+
+        // Labels et champs de texte
+        JTextField nomField = new JTextField(20);
+        JTextField prenomField = new JTextField(20);
+        JTextField mailField = new JTextField(20);
+        JPasswordField passwordField = new JPasswordField(20);
+        JTextField dateArriveeField = new JTextField(20);
+        JTextField dateDepartField = new JTextField(20); // Peut être vide
+
+        // Appliquer les styles
+        Style.styleTextField(nomField);
+        Style.styleTextField(prenomField);
+        Style.styleTextField(mailField);
+        Style.stylePasswordField(passwordField);
+        Style.styleTextField(dateArriveeField);
+        Style.styleTextField(dateDepartField);
+
+        // Ajouter les composants au panneau de formulaire
+        int row = 0;
+        gbc.gridx = 0; gbc.gridy = row; formPanel.add(Style.createStyledLabel("Nom :"), gbc);
+        gbc.gridx = 1; gbc.gridy = row++; formPanel.add(nomField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = row; formPanel.add(Style.createStyledLabel("Prénom :"), gbc);
+        gbc.gridx = 1; gbc.gridy = row++; formPanel.add(prenomField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = row; formPanel.add(Style.createStyledLabel("Email :"), gbc);
+        gbc.gridx = 1; gbc.gridy = row++; formPanel.add(mailField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = row; formPanel.add(Style.createStyledLabel("Mot de passe :"), gbc);
+        gbc.gridx = 1; gbc.gridy = row++; formPanel.add(passwordField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = row; formPanel.add(Style.createStyledLabel("Date d'arrivée (AAAA-MM-JJ) :"), gbc);
+        gbc.gridx = 1; gbc.gridy = row++; formPanel.add(dateArriveeField, gbc);
+
+        gbc.gridx = 0; gbc.gridy = row; formPanel.add(Style.createStyledLabel("Date de départ (AAAA-MM-JJ, optionnel) :"), gbc);
+        gbc.gridx = 1; gbc.gridy = row++; formPanel.add(dateDepartField, gbc);
+
+        addDialog.add(formPanel, BorderLayout.CENTER);
+
+        // Panneau pour les boutons (Ajouter et Annuler)
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 10, 10));
+        buttonPanel.setBackground(Style.PRIMARY_BACKGROUND);
+
+        JButton saveButton = new JButton("Ajouter Employé");
+        Style.styleButton(saveButton);
+        JButton cancelButton = new JButton("Annuler");
+        Style.styleButton(cancelButton);
+
+        buttonPanel.add(saveButton);
+        buttonPanel.add(cancelButton);
+        addDialog.add(buttonPanel, BorderLayout.SOUTH);
+
+        // Action du bouton "Ajouter Employé"
+        saveButton.addActionListener(e -> {
+            String nom = nomField.getText().trim();
+            String prenom = prenomField.getText().trim();
+            String mail = mailField.getText().trim();
+            String password = new String(passwordField.getPassword()).trim();
+            String dateArriveeStr = dateArriveeField.getText().trim();
+            String dateDepartStr = dateDepartField.getText().trim();
+
+            if (nom.isEmpty() || prenom.isEmpty() || mail.isEmpty() || password.isEmpty() || dateArriveeStr.isEmpty()) {
+                JOptionPane.showMessageDialog(addDialog, "Veuillez remplir tous les champs obligatoires (sauf Date de départ).", "Champs manquants", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
+
+            try {
+                LocalDate dateArrivee = LocalDate.parse(dateArriveeStr);
+                LocalDate dateDepart = dateDepartStr.isEmpty() ? null : LocalDate.parse(dateDepartStr);
+
+                // Crée un nouvel employé via GestionPersonnel
+                // Notez que la ligue est passée au constructeur ou à la méthode d'ajout de GestionPersonnel
+                Employe nouvelEmploye = mainFrame.getGestionPersonnel().addEmploye(
+                    ligue, nom, prenom, mail, password, dateArrivee, dateDepart
+                );
+
+                JOptionPane.showMessageDialog(addDialog, "Employé '" + nouvelEmploye.getNom() + " " + nouvelEmploye.getPrenom() + "' ajouté avec succès à la ligue " + ligue.getNom() + " !", "Succès", JOptionPane.INFORMATION_MESSAGE);
+                loadEmployes(); // Rafraîchit le tableau des employés
+                addDialog.dispose(); // Ferme la boîte de dialogue
+            } catch (DateTimeParseException ex) {
+                JOptionPane.showMessageDialog(addDialog, "Format de date invalide. Utilisez le format AAAA-MM-JJ.", "Erreur de date", JOptionPane.ERROR_MESSAGE);
+            } catch (DateIncoherenteException | DateInvalideException ex) {
+                JOptionPane.showMessageDialog(addDialog, "Erreur de date : " + ex.getMessage(), "Erreur de date", JOptionPane.ERROR_MESSAGE);
+            } catch (SauvegardeImpossible ex) {
+                JOptionPane.showMessageDialog(addDialog, "Erreur lors de la sauvegarde de l'employé : " + ex.getMessage(), "Erreur de sauvegarde", JOptionPane.ERROR_MESSAGE);
+                ex.printStackTrace();
+            } catch (IllegalArgumentException ex) {
+                JOptionPane.showMessageDialog(addDialog, "Erreur : " + ex.getMessage(), "Erreur", JOptionPane.ERROR_MESSAGE);
+            } 
+        });
+
+        cancelButton.addActionListener(e -> addDialog.dispose()); // Fermer la boîte de dialogue sans sauvegarder
+
+        addDialog.pack();
+        addDialog.setLocationRelativeTo(this); // Centrer par rapport au panneau parent
+        addDialog.setVisible(true);
     }
 
 

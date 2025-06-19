@@ -174,9 +174,14 @@ public static JLabel createStyledLabel(String text) {
     return label;
 }
 
-public static JButton createStyledButton(String string) {
-	// TODO Auto-generated method stub
-	return null;
+public static JButton createStyledButton(String text) {
+    JButton button = new JButton(text);
+    button.setFont(FONT_BUTTON);
+    button.setBackground(ACCENT_COLOR);
+    button.setForeground(PRIMARY_BACKGROUND);
+    button.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
+    button.setFocusPainted(false);
+    button.setCursor(new Cursor(Cursor.HAND_CURSOR));
+    return button;
 }
-
 }

@@ -160,8 +160,8 @@ public class MainMenuPanel extends JPanel {
             employe.getId(),
             employe.estRoot() ? "Super-Administrateur" : (employe.getLigue() != null && employe.getLigue().getAdministrateur() != null && employe.getLigue().getAdministrateur().equals(employe) ? "Administrateur de Ligue" : "Employé Standard")
         );
-
-        JOptionPane.showMessageDialog(mainFrame, profileInfo, "Mon Profil", JOptionPane.INFORMATION_MESSAGE);
+        mainFrame.showPanel(PersonnelGUI.EMPLOYE_DETAILS_PANEL);
+       // JOptionPane.showMessageDialog(mainFrame, profileInfo, "Mon Profil", JOptionPane.INFORMATION_MESSAGE);
     }
 
     /**

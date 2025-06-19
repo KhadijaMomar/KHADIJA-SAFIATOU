@@ -51,7 +51,7 @@ public class PersonnelGUI extends JFrame {
         cardLayout = new CardLayout();
         mainPanel = new JPanel(cardLayout);
         mainPanel.setBackground(Style.PRIMARY_BACKGROUND); // Couleur de fond principale
-
+        EmployeDetailsPanel employeDetailsPanel = new EmployeDetailsPanel(this);
         // Ajout des panneaux à la carte
         mainPanel.add(new LoginPanel(this), LOGIN_PANEL);
         // Les autres panneaux seront ajoutés dynamiquement ou initialisés plus tard
@@ -62,6 +62,9 @@ public class PersonnelGUI extends JFrame {
 
         // Afficher le panneau de connexion au démarrage
         showPanel(LOGIN_PANEL);
+     // Afficher le panneau de détails de l'employé
+       
+        mainPanel.add(employeDetailsPanel, EMPLOYE_DETAILS_PANEL);
     }
 
     /**

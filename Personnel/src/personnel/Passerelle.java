@@ -1,3 +1,4 @@
+// Fichier: personnel/Passerelle.java
 package personnel;
 
 import java.time.LocalDate;
@@ -38,28 +39,29 @@ public interface Passerelle {
      * @param employe L'employé à mettre à jour.
      * @throws SauvegardeImpossible Si une erreur se produit lors de la sauvegarde.
      */
-    void update(Employe employe) throws SauvegardeImpossible; // <-- Doit déclarer SauvegardeImpossible
+    void update(Employe employe) throws SauvegardeImpossible;
 
     /**
      * Supprime une ligue du système de persistance.
      * @param ligue La ligue à supprimer.
-     * @throws SauvegardeImpossible Si une erreur se produit lors de la suppression.
+     * @throws SauvegardeImpossible Si une erreur se produit lors de la sauvegarde.
      */
     void delete(Ligue ligue) throws SauvegardeImpossible;
 
     /**
      * Supprime un employé du système de persistance.
      * @param employe L'employé à supprimer.
-     * @throws SauvegardeImpossible Si une erreur se produit lors de la suppression.
+     * @throws SauvegardeImpossible Si une erreur se produit lors de la sauvegarde.
      */
     void delete(Employe employe) throws SauvegardeImpossible;
 
     /**
-     * Charge toutes les ligues et leurs employés depuis le système de persistance.
-     * Les objets Ligue et Employe sont ajoutés à l'instance de GestionPersonnel.
-     * @throws SauvegardeImpossible Si une erreur se produit lors du chargement.
+     * Récupère toutes les ligues et leurs employés depuis le système de persistance.
+     * Construit une instance de GestionPersonnel avec les données chargées.
+     * @return L'instance de GestionPersonnel chargée.
+     * @throws SauvegardeImpossible Si une erreur se produit lors de l'accès aux données.
      */
-    void getGestionPersonnel() throws SauvegardeImpossible;
+    GestionPersonnel getGestionPersonnel() throws SauvegardeImpossible;
 
     /**
      * Récupère un employé par son nom.
@@ -106,4 +108,18 @@ public interface Passerelle {
 	 * @throws SauvegardeImpossible Si une erreur de sauvegarde se produit.
 	 */
 	boolean utilisateurExiste(String nomUtilisateur) throws SauvegardeImpossible;
+	
+	 /**
+     * Récupère l'employé root (administrateur principal).
+     * @return L'employé root.
+     */
+    Employe getRoot();
+
+    /**
+     * Hache un mot de passe .
+     * @param password Le mot de passe en clair à hacher.
+     * @return Le mot de passe haché.
+     * @throws SauvegardeImpossible Si une erreur se produit lors du hachage.
+     */
+    String hashPassword(String password) throws SauvegardeImpossible; 
 }

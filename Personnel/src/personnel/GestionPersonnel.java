@@ -269,33 +269,29 @@ public class GestionPersonnel implements Serializable {
      * Initialise l'employé root. Le crée s'il n'existe pas dans la base de données.
      * @throws SauvegardeImpossible Si une erreur se produit lors de la sauvegarde.
      */
-    void initialiserRoot() throws SauvegardeImpossible {
-        // Cherche le root par son mail/nom connu
-        Employe loadedRoot = getEmploye("root"); // Assumons que le mail du root est "root"
-        if (loadedRoot == null) {
-            loadedRoot = passerelle.getEmployeByNom("root"); // Tente de le charger directement de la BD si pas déjà en mémoire
-        }
 
-        if (loadedRoot == null) {
-            // Si le root n'existe pas dans la BD, le créer
-            // Le constructeur d'Employe gérera l'insertion en BD et l'affectation de l'ID
-            root = new Employe(this, null, "root", "root", "root", "toor", LocalDate.now(), null);
-            // Marque explicitement le root comme tel après sa création
-            // La méthode setEstRoot va persister ce statut
-            if (root != null) { // S'assurer que l'objet root a bien été créé
-                root.setEstRoot(true); 
-            }
-            System.out.println("Utilisateur 'root' créé dans la base de données.");
-        } else {
-            root = loadedRoot;
-            // Assurez-vous que le statut root est bien défini pour l'objet en mémoire
-            // La méthode setEstRoot va persister ce statut
-            if (root != null) { // S'assurer que l'objet root a bien été chargé
-                root.setEstRoot(true); 
-            }
-            System.out.println("Utilisateur 'root' chargé depuis la base de données.");
-        }
+void initialiserRoot() throws SauvegardeImpossible {
+    Employe loadedRoot = getEmploye("root");
+    if (loadedRoot == null) {
+        loadedRoot = passerelle.getEmployeByNom("root");
     }
+
+    if (loadedRoot == null) {
+        // Hachage du mot de passe avant de créer l'utilisateur root
+        String hashedPassword = passerelle.hashPassword("toor");
+        root = new Employe(this, null, "root", "root", "root", hashedPassword, LocalDate.now(), null);
+        if (root != null) {
+            root.setEstRoot(true);
+        }
+        System.out.println("Utilisateur 'root' créé dans la base de données.");
+    } else {
+        root = loadedRoot;
+        if (root != null) {
+            root.setEstRoot(true);
+        }
+        System.out.println("Utilisateur 'root' chargé depuis la base de données.");
+    }
+}
 
     /**
      * Retourne l'employé root.

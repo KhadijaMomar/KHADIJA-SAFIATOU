@@ -214,10 +214,10 @@ public class GestionPersonnel implements Serializable {
      */
     public Employe authentifier(String nomUtilisateur, String password) throws SauvegardeImpossible {
         Employe employe = null;
-        
+
         // Tente de trouver l'employé par mail d'abord
-        employe = getEmploye(nomUtilisateur); 
-        
+        employe = getEmploye(nomUtilisateur);
+
         // Si non trouvé par mail, tente de trouver par nom via la passerelle
         if (employe == null) {
             if (passerelle != null) {
@@ -226,11 +226,12 @@ public class GestionPersonnel implements Serializable {
         }
 
         if (employe != null) {
-            if (employe.getPassword().equals(password)) {
+            String hashedPasswordInput = passerelle.hashPassword(password); // Ajoutez cette ligne
+            if (employe.getPassword().equals(hashedPasswordInput)) { // Modifiez cette ligne
                 return employe;
             }
         }
-        return null; // Authentification échouée
+        return null; 
     }
 
     // Méthodes d'insertion, mise à jour et suppression (qui délèguent à la passerelle)
@@ -289,7 +290,6 @@ void initialiserRoot() throws SauvegardeImpossible {
         if (root != null) {
             root.setEstRoot(true);
         }
-        System.out.println("Utilisateur 'root' chargé depuis la base de données.");
     }
 }
 

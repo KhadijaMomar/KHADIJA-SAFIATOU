@@ -23,7 +23,6 @@ public class Serialization implements Passerelle {
             return null;
         }
     }
-
     /**
      * Sauvegarde le gestionnaire pour qu'il soit ouvert automatiquement
      * lors d'une exécution ultérieure du programme.

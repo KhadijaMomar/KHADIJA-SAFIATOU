@@ -42,7 +42,7 @@ private static final long serialVersionUID = 1L;
         add(titleLabel, BorderLayout.NORTH);
 
         // Tableau des employés
-        String[] columnNames = {"ID", "Nom", "Prénom", "Mail", "Ligue", "Date Arrivée", "Date Départ"};
+        String[] columnNames = {"ID", "Nom", "Prénom", "Mail", "Date Arrivée", "Date Départ"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -101,13 +101,11 @@ private static final long serialVersionUID = 1L;
         allEmployes.stream()
                 .sorted(Comparator.comparing(Employe::getNom).thenComparing(Employe::getPrenom))
                 .forEach(employe -> {
-                    String ligueNom = employe.getLigue() != null ? employe.getLigue().getNom() : "N/A";
                     tableModel.addRow(new Object[]{
                         employe.getId(),
                         employe.getNom(),
                         employe.getPrenom(),
                         employe.getMail(),
-                        ligueNom,
                         employe.getDateArrivee() != null ? employe.getDateArrivee().toString() : "N/A",
                         employe.getDateDepart() != null ? employe.getDateDepart().toString() : "N/A"
                     });

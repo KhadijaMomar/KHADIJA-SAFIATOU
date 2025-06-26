@@ -72,7 +72,7 @@ public class EmployeManagementPanel extends JPanel {
         add(panelTitleLabel, BorderLayout.NORTH);
 
         // Initialisation du tableau des employés
-        String[] columnNames = {"ID", "Nom", "Prénom", "Email", "Ligue", "Date Arrivée", "Date Départ", "Root"};
+        String[] columnNames = {"ID", "Nom", "Prénom", "Email", "Date Arrivée", "Date Départ", "Root"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -150,7 +150,6 @@ public class EmployeManagementPanel extends JPanel {
                     emp.getNom(),
                     emp.getPrenom(),
                     emp.getMail(),
-                    (emp.getLigue() != null) ? emp.getLigue().getNom() : "N/A",
                     (emp.getDateArrivee() != null) ? emp.getDateArrivee().toString() : "N/A",
                     (emp.getDateDepart() != null) ? emp.getDateDepart().toString() : "N/A",
                     emp.estRoot() ? "Oui" : "Non"

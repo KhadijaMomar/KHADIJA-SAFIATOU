@@ -40,7 +40,12 @@ public class Ligue implements Serializable, Comparable<Ligue> {
         this.administrateur = null; // L'administrateur sera défini après le chargement des employés
         this.id = id; // L'ID est fourni car la ligue existe déjà en BD
     }
-
+    
+    public Ligue(GestionPersonnel gestionPersonnel, int id, String nom, Employe administrateur) {
+    	this(gestionPersonnel, id, nom); // Appelle le constructeur de base)
+        this.administrateur = administrateur; // Définit l'administrateur de la ligue
+        
+    }
     // --- Getters ---
     public int getId() {
         return id;

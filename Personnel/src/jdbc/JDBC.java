@@ -165,7 +165,12 @@ public class JDBC implements Passerelle {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String nom = rs.getString("nom");
-                Ligue ligue = new Ligue(gestionPersonnel, id, nom);
+                int administrateurId = rs.getInt("administrateur_id");
+                Employe administrateur = null; // Initialisation de l'administrateur
+                if (administrateurId != 0) {
+					 administrateur = getEmploye(administrateurId);// Récupère l'administrateur par ID
+                }
+                Ligue ligue = new Ligue(gestionPersonnel, id, nom, administrateur);
                 gestionPersonnel.add(ligue);
                 liguesLoaded.put(id, ligue);
             }
@@ -206,53 +211,165 @@ public class JDBC implements Passerelle {
         return gestionPersonnel;
     }
 
-	@Override
-	public void update(Ligue ligue) throws SauvegardeImpossible {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void update(Ligue ligue) throws SauvegardeImpossible {
+        String sql = "UPDATE ligue SET nom = ?, administrateur_id = ? WHERE id = ?"; // NOM CORRIGÉ
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, ligue.getNom());
+            pstmt.setObject(2, ligue.getAdministrateur() != null ? ligue.getAdministrateur().getId() : null, Types.INTEGER);
+            pstmt.setInt(3, ligue.getId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new SauvegardeImpossible("Erreur lors de la mise à jour de la ligue : " + e.getMessage(), e);
+        }
+    }
 
-	@Override
-	public void update(Employe employe) throws SauvegardeImpossible {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void update(Employe employe) throws SauvegardeImpossible {
+        String sql = "UPDATE employe SET nom = ?, prenom = ?, mail = ?, password = ?, date_arrivee = ?, date_depart = ?, ligue_id = ?, est_root = ? WHERE id = ?"; // NOM CORRIGÉ
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, employe.getNom());
+            pstmt.setString(2, employe.getPrenom());
+            pstmt.setString(3, employe.getMail());
+            pstmt.setString(4, employe.getPassword());
+            pstmt.setDate(5, employe.getDateArrivee() != null ? Date.valueOf(employe.getDateArrivee()) : null);
+            pstmt.setDate(6, employe.getDateDepart() != null ? Date.valueOf(employe.getDateDepart()) : null);
+            pstmt.setObject(7, employe.getLigue() != null ? employe.getLigue().getId() : null, Types.INTEGER);
+            pstmt.setBoolean(8, employe.estRoot()); // Met à jour le statut root
+            pstmt.setInt(9, employe.getId());
+            pstmt.executeUpdate();
+        } catch (SQLException e) {
+            throw new SauvegardeImpossible("Erreur lors de la mise à jour de l'employé : " + e.getMessage(), e);
+        }
+    }
 
-	@Override
-	public void delete(Ligue ligue) throws SauvegardeImpossible {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void delete(Ligue ligue) throws SauvegardeImpossible {
+        String sql = "DELETE FROM ligue WHERE id = ?"; // NOM CORRIGÉ
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, ligue.getId());
+            pstmt.executeUpdate();
+            liguesLoaded.remove(ligue.getId()); // Supprime de la map des ligues chargées
+        } catch (SQLException e) {
+            throw new SauvegardeImpossible("Erreur lors de la suppression de la ligue : " + e.getMessage(), e);
+        }
+    }
 
-	@Override
-	public void delete(Employe employe) throws SauvegardeImpossible {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void delete(Employe employe) throws SauvegardeImpossible {
+        String sql = "DELETE FROM employe WHERE id = ?"; // NOM CORRIGÉ
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, employe.getId());
+            pstmt.executeUpdate();
+            employesLoaded.remove(employe.getId()); // Supprime de la map des employés chargés
+        } catch (SQLException e) {
+            throw new SauvegardeImpossible("Erreur lors de la suppression de l'employé : " + e.getMessage(), e);
+        }
+    }
 
-	@Override
-	public Employe getEmployeByNom(String nom) throws SauvegardeImpossible {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public Employe getEmployeByNom(String nom) throws SauvegardeImpossible {
+        String sql = "SELECT id, nom, prenom, mail, password, date_arrivee, date_depart, ligue_id, est_root FROM employe WHERE nom = ?"; // NOM CORRIGÉ
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, nom);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    int id = rs.getInt("id");
+                    String prenom = rs.getString("prenom");
+                    String mail = rs.getString("mail");
+                    String password = rs.getString("password");
+                    LocalDate dateArrivee = rs.getDate("date_arrivee") != null ? rs.getDate("date_arrivee").toLocalDate() : null;
+                    LocalDate dateDepart = rs.getDate("date_depart") != null ? rs.getDate("date_depart").toLocalDate() : null;
+                    int ligueId = rs.getInt("ligue_id");
+                    boolean estRoot = rs.getBoolean("est_root");
 
-	@Override
-	public Employe getEmployeByMail(String mail) throws SauvegardeImpossible {
-		// TODO Auto-generated method stub
-		return null;
-	}
+                    Ligue ligue = liguesLoaded.get(ligueId); // Récupère la ligue par son ID
 
-	@Override
-	public Employe getEmploye(int id) throws SauvegardeImpossible {
-		// TODO Auto-generated method stub
-		return null;
-	}
+                    Employe employe = new Employe(gestionPersonnel, id, ligue, nom, prenom, mail, password, dateArrivee, dateDepart);
+                    if (estRoot) {
+                        employe.setEstRoot(true);
+                    }
+                    return employe;
+                }
+            }
+        } catch (SQLException e) {
+            throw new SauvegardeImpossible("Erreur lors de la récupération de l'employé par nom : " + e.getMessage(), e);
+        }
+        return null;
+    }
 
-	@Override
-	public void sauvegarderGestionPersonnel(GestionPersonnel gestionPersonnel) throws SauvegardeImpossible {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public Employe getEmployeByMail(String mail) throws SauvegardeImpossible {
+        String sql = "SELECT id, nom, prenom, mail, password, date_arrivee, date_depart, ligue_id, est_root FROM employe WHERE mail = ?"; // NOM CORRIGÉ
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setString(1, mail);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    int id = rs.getInt("id");
+                    String nom = rs.getString("nom");
+                    String prenom = rs.getString("prenom");
+                    String password = rs.getString("password");
+                    LocalDate dateArrivee = rs.getDate("date_arrivee") != null ? rs.getDate("date_arrivee").toLocalDate() : null;
+                    LocalDate dateDepart = rs.getDate("date_depart") != null ? rs.getDate("date_depart").toLocalDate() : null;
+                    int ligueId = rs.getInt("ligue_id");
+                    boolean estRoot = rs.getBoolean("est_root");
+
+                    Ligue ligue = liguesLoaded.get(ligueId); // Récupère la ligue par son ID
+
+                    Employe employe = new Employe(gestionPersonnel, id, ligue, nom, prenom, mail, password, dateArrivee, dateDepart);
+                    if (estRoot) {
+                        employe.setEstRoot(true);
+                    }
+                    return employe;
+                }
+            }
+        } catch (SQLException e) {
+            throw new SauvegardeImpossible("Erreur lors de la récupération de l'employé par mail : " + e.getMessage(), e);
+        }
+        return null;
+    }
+
+    @Override
+    public Employe getEmploye(int id) throws SauvegardeImpossible {
+        String sql = "SELECT id, nom, prenom, mail, password, date_arrivee, date_depart, ligue_id, est_root FROM employe WHERE id = ?"; // NOM CORRIGÉ
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, id);
+            try (ResultSet rs = pstmt.executeQuery()) {
+                if (rs.next()) {
+                    String nom = rs.getString("nom");
+                    String prenom = rs.getString("prenom");
+                    String mail = rs.getString("mail");
+                    String password = rs.getString("password");
+                    LocalDate dateArrivee = rs.getDate("date_arrivee") != null ? rs.getDate("date_arrivee").toLocalDate() : null;
+                    LocalDate dateDepart = rs.getDate("date_depart") != null ? rs.getDate("date_depart").toLocalDate() : null;
+                    int ligueId = rs.getInt("ligue_id");
+                    boolean estRoot = rs.getBoolean("est_root");
+
+                    Ligue ligue = liguesLoaded.get(ligueId); // Récupère la ligue par son ID
+
+                    Employe employe = new Employe(gestionPersonnel, id, ligue, nom, prenom, mail, password, dateArrivee, dateDepart);
+                    if (estRoot) {
+                        employe.setEstRoot(true);
+                    }
+                    return employe;
+                }
+            }
+        } catch (SQLException e) {
+            throw new SauvegardeImpossible("Erreur lors de la récupération de l'employé par ID : " + e.getMessage(), e);
+        }
+        return null;
+    }
+
+    /**
+     * Sauvegarde l'état complet de la gestion du personnel.
+     * Pour JDBC, les modifications sont persistées directement, donc cette méthode ferme la connexion.
+     * @param gestionPersonnel L'instance de GestionPersonnel à sauvegarder.
+     * @throws SauvegardeImpossible Si une erreur de sauvegarde se produit.
+     */
+    @Override
+    public void sauvegarderGestionPersonnel(GestionPersonnel gestionPersonnel) throws SauvegardeImpossible {
+        close(); // Ferme la connexion à la base de données
+    }
 
 	@Override
 	public boolean utilisateurExiste(String nomUtilisateur) throws SauvegardeImpossible {
@@ -262,7 +379,6 @@ public class JDBC implements Passerelle {
 
 	@Override
 	public Employe getRoot() {
-		// TODO Auto-generated method stub
-		return null;
+		 return this.gestionPersonnel.getRoot();
 	}
 }
